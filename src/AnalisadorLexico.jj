@@ -91,11 +91,25 @@ TOKEN : {
 // ------------------------
 // Palavras reservadas
 // ------------------------
-TOKEN : { 
-    <PALAVRA_RESERVADA: <LETRA>^2 (<LETRA>?)^4>
-  | <#LETRA: ["a"-"z", "A"-"Z"]>
+TOKEN : {
+    <PALAVRA_RESERVADA: <LETRA><LETRA> (<LETRA>)?(<LETRA>)?(<LETRA>)?(<LETRA>)?>
 }
 
+// ------------------------
+// Comentário de linha
+// ------------------------
+TOKEN : {
+    <TEXTO: (<ASSCI> | <LETRA> | <DIGITO>)*>
+    |<COMENTARIO_LINHA: <BARRA> <BARRA> <TEXTO>>
+    | <#BARRA: ["/"]>
+}
+
+// ------------------------
+// Comentário de Bloco
+// ------------------------
+TOKEN : {
+    <COMENTARIO_BLOCO: "/" "*" <TEXTO> "*" "/" >
+}
 
 // ------------------------
 // Símbolos especiais

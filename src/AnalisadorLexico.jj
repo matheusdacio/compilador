@@ -1,0 +1,137 @@
+options {
+    STATIC = false; // Permite instanciar o analisador como objeto
+}
+
+PARSER_BEGIN(AnalisadorLexico)
+
+import java.io.*;
+
+public class AnalisadorLexico {
+    public static void main(String args[]) throws ParseException, TokenMgrError, FileNotFoundException {
+        try {
+            AnalisadorLexico parser = new AnalisadorLexico(new FileInputStream(args[0]));
+            Token t;
+            do {
+                t = parser.getNextToken();
+                System.out.printf("Lexema: %s, Linha: %d, Coluna: %d, Categoria: %s, Código: %d%n",
+                                   t.image, t.beginLine, t.beginColumn, t.kind, t.kind);
+            } while (t.kind != EOF);
+        } catch (FileNotFoundException e) {
+            System.err.println("Arquivo não encontrado.");
+        }
+    }
+}
+
+PARSER_END(AnalisadorLexico)
+
+// ------------------------
+// Espaços em branco
+// ------------------------
+SKIP : {
+    " " | "\t" | "\n" | "\r"
+}
+
+// ------------------------
+// Comentários
+// ------------------------
+SKIP : {
+    <LINE_COMMENT: "//" (~["\n", "\r"])* >
+    | "/*" : IN_COMMENT
+}
+
+<IN_COMMENT> SKIP : {
+    "*/" : DEFAULT
+    | < ~[] >
+}
+
+// ------------------------
+// Palavras reservadas do compilador
+// ------------------------
+TOKEN : {
+    <BEGIN: "begin">
+    | <DEFINE: "define">
+    | <START: "start">
+    | <END: "end">
+    | <SET: "set">
+    | <READ: "read">
+    | <SHOW: "show">
+    | <IF: "if">
+    | <THEN: "then">
+    | <ELSE: "else">
+    | <LOOP: "loop">
+    | <WHILE: "while">
+    | <NUM: "num">
+    | <REAL: "real">
+    | <TEXT: "text">
+    | <FLAG: "flag">
+    | <TRUE: "true">
+    | <FALSE: "false">
+}
+
+// ------------------------
+// Identificadores
+// ------------------------
+TOKEN : {
+    <IDENTIFIER: (<LETRA> | "_")(<DIGITO>(<LETRA> | "_")|(<LETRA> | "_")*)>
+    | <#LETRA: ["a"-"z", "A"-"Z"]>
+    | <#DIGITO: ["0"-"9"]>
+}
+
+
+// ------------------------
+// Constantes
+// ------------------------
+TOKEN : {
+    <CONST_REAL: <DIGITO> (<DIGITO>)? (<DIGITO>)? (<DIGITO>)?>
+  | <CONST_INT:  <DIGITO> (<DIGITO>)? (<DIGITO>)? >
+  | <CONST_LITERAL: "\"" (<ASSCI>)* "\"" | "'" (<ASSCI> )* "'" >
+  | <#ASSCI: ["\u0000"-"\u00FF"]>
+}
+
+// ------------------------
+// Palavras reservadas
+// ------------------------
+TOKEN : { 
+    <PALAVRA_RESERVADA: <LETRA>^2 (<LETRA>?)^4>
+  | <#LETRA: ["a"-"z", "A"-"Z"]>
+}
+
+
+// ------------------------
+// Símbolos especiais
+// (ordem: operadores longos primeiro)
+// ------------------------
+TOKEN : {
+    <OP_POW: "**">
+    | <OP_RESTO_DIV: "%%">
+    | <OP_MENOR_IGUAL: "<<=">
+    | <OP_MAIOR_IGUAL: ">>=">
+    | <OP_IGUAL: "==">
+    | <OP_DIF: "!=">
+    | <OP_MENOR: "<<">
+    | <OP_MAIOR: ">>">
+    | <ASSIGNMENT: "=">
+    | <SEMICOLON: ";">
+    | <COMMA: ",">
+    | <LPAREN: "(">
+    | <RPAREN: ")">
+    | <LBRACKET: "[">
+    | <RBRACKET: "]">
+    | <LBRACE: "{">
+    | <RBRACE: "}">
+    | <OP_SOMA: "+">
+    | <OP_SUB: "-">
+    | <OP_MULT: "*">
+    | <OP_DIV: "/">
+    | <OP_MOD: "%">
+    | <OP_E: "&">
+    | <OP_OU: "|">
+    | <OP_NAO: "!">
+}
+
+// ------------------------
+// Erros léxicos
+// ------------------------
+TOKEN : {
+    <ERRO_LEXICO: ~[" ", "\t", "\n", "\r"] >
+}

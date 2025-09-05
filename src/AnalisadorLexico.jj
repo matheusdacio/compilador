@@ -91,34 +91,20 @@ TOKEN : {
 
 // ------------------------
 // Símbolos especiais
-// (ordem: operadores longos primeiro)
+// (agrupados por categoria e com operadores longos primeiro)
 // ------------------------
 TOKEN : {
-    <OP_POW: "**">
-    | <OP_RESTO_DIV: "%%">
-    | <OP_MENOR_IGUAL: "<<=">
-    | <OP_MAIOR_IGUAL: ">>=">
-    | <OP_IGUAL: "==">
-    | <OP_DIF: "!=">
-    | <OP_MENOR: "<<">
-    | <OP_MAIOR: ">>">
-    | <ASSIGNMENT: "=">
-    | <SEMICOLON: ";">
-    | <COMMA: ",">
-    | <LPAREN: "(">
-    | <RPAREN: ")">
-    | <LBRACKET: "[">
-    | <RBRACKET: "]">
-    | <LBRACE: "{">
-    | <RBRACE: "}">
-    | <OP_SOMA: "+">
-    | <OP_SUB: "-">
-    | <OP_MULT: "*">
-    | <OP_DIV: "/">
-    | <OP_MOD: "%">
-    | <OP_E: "&">
-    | <OP_OU: "|">
-    | <OP_NAO: "!">
+    // Operadores Relacionais
+    < OP_RELACIONAL: "<<=" | ">>=" | "==" | "!=" | "<<" | ">>" >
+    |
+    // Operadores Aritméticos
+    < OP_ARITMETICO: "**" | "%%" | "%" | "+" | "-" | "*" | "/" >
+    |
+    // Operadores Lógicos
+    < OP_LOGICO: "&" | "|" | "!" >
+    |
+    // Símbolos Especiais
+    < SIMBOLO_ESPECIAL: "=" | ";" | "," | "[" | "]" | "." >
 }
 
 // ------------------------

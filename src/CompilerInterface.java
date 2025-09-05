@@ -183,7 +183,6 @@ public class CompilerInterface extends JFrame {
             messagesArea.setText("ERRO LÉXICO GRAVE:\n" + e.getMessage());
         }
     }
-
     /**
      * Mapeia o 'kind' (código) de um token para uma categoria legível.
      * @param t O Token a ser analisado.
@@ -191,6 +190,10 @@ public class CompilerInterface extends JFrame {
      */
     /**
      * Mapeia o 'kind' (código) de um token para uma categoria legível.
+     */
+    /**
+     * Mapeia o 'kind' (código) de um token para uma categoria legível,
+     * com sub-categorias para operadores.
      */
     private String getCategoryName(Token t) {
         String tokenName = AnalisadorLexico.tokenImage[t.kind].replace("\"", "").replace("<", "").replace(">", "");
@@ -215,21 +218,27 @@ public class CompilerInterface extends JFrame {
             case "CONST_LITERAL":
                 return "CONSTANTE LITERAL";
 
-            // --- SÍMBOLOS ESPECIAIS ---
-            case "OP_POW": case "OP_RESTO_DIV": case "OP_MENOR_IGUAL": case "OP_MAIOR_IGUAL":
-            case "OP_IGUAL": case "OP_DIF": case "OP_MENOR": case "OP_MAIOR":
-            case "ASSIGNMENT": case "SEMICOLON": case "COMMA": case "LPAREN": case "RPAREN":
-            case "LBRACKET": case "RBRACKET": case "LBRACE": case "RBRACE": case "OP_SOMA":
-            case "OP_SUB": case "OP_MULT": case "OP_DIV": case "OP_MOD": case "OP_E":
-            case "OP_OU": case "OP_NAO":
+            // --- OPERADORES (AGORA SUB-CATEGORIZADOS) ---
+            case "OP_ARITMETICO":
+                return "OPERADOR ARITMÉTICO";
+
+            case "OP_RELACIONAL":
+                return "OPERADOR RELACIONAL";
+
+            case "OP_LOGICO":
+                return "OPERADOR LÓGICO";
+
+            // --- SÍMBOLOS ESPECIAIS (NÃO OPERADORES) ---
+            case "SIMBOLO_ESPECIAL":
                 return "SÍMBOLO ESPECIAL";
 
             // --- ERROS ---
-            case "ERRO_LITERAL": // Novo caso para o erro de literal
+            case "INVALID_IDENTIFIER":
+                return "ERRO LÉXICO: identificador inválido";
+            case "ERRO_LITERAL":
                 return "ERRO LÉXICO: constante literal não finalizada";
-            case "ERRO_LEXICO": // Este agora trata apenas de símbolos inválidos
+            case "ERRO_LEXICO":
                 return "ERRO LÉXICO: símbolo inválido";
-
             default:
                 return tokenName; // Categoria padrão caso não se encaixe
         }

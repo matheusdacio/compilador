@@ -61,57 +61,15 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int ERRO_LITERAL = 33;
   /** RegularExpression Id. */
-  int OP_POW = 34;
+  int OP_RELACIONAL = 34;
   /** RegularExpression Id. */
-  int OP_RESTO_DIV = 35;
+  int OP_ARITMETICO = 35;
   /** RegularExpression Id. */
-  int OP_MENOR_IGUAL = 36;
+  int OP_LOGICO = 36;
   /** RegularExpression Id. */
-  int OP_MAIOR_IGUAL = 37;
+  int SIMBOLO_ESPECIAL = 37;
   /** RegularExpression Id. */
-  int OP_IGUAL = 38;
-  /** RegularExpression Id. */
-  int OP_DIF = 39;
-  /** RegularExpression Id. */
-  int OP_MENOR = 40;
-  /** RegularExpression Id. */
-  int OP_MAIOR = 41;
-  /** RegularExpression Id. */
-  int ASSIGNMENT = 42;
-  /** RegularExpression Id. */
-  int SEMICOLON = 43;
-  /** RegularExpression Id. */
-  int COMMA = 44;
-  /** RegularExpression Id. */
-  int LPAREN = 45;
-  /** RegularExpression Id. */
-  int RPAREN = 46;
-  /** RegularExpression Id. */
-  int LBRACKET = 47;
-  /** RegularExpression Id. */
-  int RBRACKET = 48;
-  /** RegularExpression Id. */
-  int LBRACE = 49;
-  /** RegularExpression Id. */
-  int RBRACE = 50;
-  /** RegularExpression Id. */
-  int OP_SOMA = 51;
-  /** RegularExpression Id. */
-  int OP_SUB = 52;
-  /** RegularExpression Id. */
-  int OP_MULT = 53;
-  /** RegularExpression Id. */
-  int OP_DIV = 54;
-  /** RegularExpression Id. */
-  int OP_MOD = 55;
-  /** RegularExpression Id. */
-  int OP_E = 56;
-  /** RegularExpression Id. */
-  int OP_OU = 57;
-  /** RegularExpression Id. */
-  int OP_NAO = 58;
-  /** RegularExpression Id. */
-  int ERRO_LEXICO = 59;
+  int ERRO_LEXICO = 38;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -154,31 +112,10 @@ public interface AnalisadorLexicoConstants {
     "<CONST_INT>",
     "<CONST_LITERAL>",
     "<ERRO_LITERAL>",
-    "\"**\"",
-    "\"%%\"",
-    "\"<<=\"",
-    "\">>=\"",
-    "\"==\"",
-    "\"!=\"",
-    "\"<<\"",
-    "\">>\"",
-    "\"=\"",
-    "\";\"",
-    "\",\"",
-    "\"(\"",
-    "\")\"",
-    "\"[\"",
-    "\"]\"",
-    "\"{\"",
-    "\"}\"",
-    "\"+\"",
-    "\"-\"",
-    "\"*\"",
-    "\"/\"",
-    "\"%\"",
-    "\"&\"",
-    "\"|\"",
-    "\"!\"",
+    "<OP_RELACIONAL>",
+    "<OP_ARITMETICO>",
+    "<OP_LOGICO>",
+    "<SIMBOLO_ESPECIAL>",
     "<ERRO_LEXICO>",
   };
 

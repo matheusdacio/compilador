@@ -50,24 +50,11 @@ SKIP : {
 // Palavras reservadas do compilador
 // ------------------------
 TOKEN : {
-    <BEGIN: "begin">
-    | <DEFINE: "define">
-    | <START: "start">
-    | <END: "end">
-    | <SET: "set">
-    | <READ: "read">
-    | <SHOW: "show">
-    | <IF: "if">
-    | <THEN: "then">
-    | <ELSE: "else">
-    | <LOOP: "loop">
-    | <WHILE: "while">
-    | <NUM: "num">
-    | <REAL: "real">
-    | <TEXT: "text">
-    | <FLAG: "flag">
-    | <TRUE: "true">
-    | <FALSE: "false">
+  < PALAVRA_RESERVADA:
+      "begin" | "define" | "start" | "end" | "set" | "read" | "show" |
+      "if" | "then" | "else" | "loop" | "while" | "num" | "real" |
+      "text" | "flag" | "true" | "false"
+  >
 }
 
 // ------------------------

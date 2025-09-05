@@ -11,65 +11,31 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int LINE_COMMENT = 5;
   /** RegularExpression Id. */
-  int BEGIN = 9;
+  int PALAVRA_RESERVADA = 9;
   /** RegularExpression Id. */
-  int DEFINE = 10;
+  int IDENTIFIER = 10;
   /** RegularExpression Id. */
-  int START = 11;
+  int LETRA = 11;
   /** RegularExpression Id. */
-  int END = 12;
+  int DIGITO = 12;
   /** RegularExpression Id. */
-  int SET = 13;
+  int CONST_REAL = 13;
   /** RegularExpression Id. */
-  int READ = 14;
+  int CONST_INT = 14;
   /** RegularExpression Id. */
-  int SHOW = 15;
+  int CONST_LITERAL = 15;
   /** RegularExpression Id. */
-  int IF = 16;
+  int ERRO_LITERAL = 16;
   /** RegularExpression Id. */
-  int THEN = 17;
+  int OP_RELACIONAL = 17;
   /** RegularExpression Id. */
-  int ELSE = 18;
+  int OP_ARITMETICO = 18;
   /** RegularExpression Id. */
-  int LOOP = 19;
+  int OP_LOGICO = 19;
   /** RegularExpression Id. */
-  int WHILE = 20;
+  int SIMBOLO_ESPECIAL = 20;
   /** RegularExpression Id. */
-  int NUM = 21;
-  /** RegularExpression Id. */
-  int REAL = 22;
-  /** RegularExpression Id. */
-  int TEXT = 23;
-  /** RegularExpression Id. */
-  int FLAG = 24;
-  /** RegularExpression Id. */
-  int TRUE = 25;
-  /** RegularExpression Id. */
-  int FALSE = 26;
-  /** RegularExpression Id. */
-  int IDENTIFIER = 27;
-  /** RegularExpression Id. */
-  int LETRA = 28;
-  /** RegularExpression Id. */
-  int DIGITO = 29;
-  /** RegularExpression Id. */
-  int CONST_REAL = 30;
-  /** RegularExpression Id. */
-  int CONST_INT = 31;
-  /** RegularExpression Id. */
-  int CONST_LITERAL = 32;
-  /** RegularExpression Id. */
-  int ERRO_LITERAL = 33;
-  /** RegularExpression Id. */
-  int OP_RELACIONAL = 34;
-  /** RegularExpression Id. */
-  int OP_ARITMETICO = 35;
-  /** RegularExpression Id. */
-  int OP_LOGICO = 36;
-  /** RegularExpression Id. */
-  int SIMBOLO_ESPECIAL = 37;
-  /** RegularExpression Id. */
-  int ERRO_LEXICO = 38;
+  int ERRO_LEXICO = 21;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -87,24 +53,7 @@ public interface AnalisadorLexicoConstants {
     "\"/*\"",
     "\"*/\"",
     "<token of kind 8>",
-    "\"begin\"",
-    "\"define\"",
-    "\"start\"",
-    "\"end\"",
-    "\"set\"",
-    "\"read\"",
-    "\"show\"",
-    "\"if\"",
-    "\"then\"",
-    "\"else\"",
-    "\"loop\"",
-    "\"while\"",
-    "\"num\"",
-    "\"real\"",
-    "\"text\"",
-    "\"flag\"",
-    "\"true\"",
-    "\"false\"",
+    "<PALAVRA_RESERVADA>",
     "<IDENTIFIER>",
     "<LETRA>",
     "<DIGITO>",

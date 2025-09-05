@@ -200,10 +200,7 @@ public class CompilerInterface extends JFrame {
 
         switch (tokenName.toUpperCase()) {
             // --- PALAVRAS RESERVADAS ---
-            case "BEGIN": case "DEFINE": case "START": case "END": case "SET":
-            case "READ": case "SHOW": case "IF": case "THEN": case "ELSE":
-            case "LOOP": case "WHILE": case "NUM": case "REAL": case "TEXT":
-            case "FLAG": case "TRUE": case "FALSE":
+            case "PALAVRA_RESERVADA":
                 return "PALAVRA RESERVADA";
 
             // --- IDENTIFICADOR ---

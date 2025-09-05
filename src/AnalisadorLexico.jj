@@ -1,5 +1,6 @@
 options {
     STATIC = false; // Permite instanciar o analisador como objeto
+    IGNORE_CASE = true;
 }
 
 PARSER_BEGIN(AnalisadorLexico)

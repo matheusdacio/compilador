@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.StringReader; // Importação adicionada
 
 public class CompilerInterface extends JFrame {
 
@@ -134,10 +135,8 @@ public class CompilerInterface extends JFrame {
         saveAsItem.addActionListener(e -> handleSaveAsAction());
         exitItem.addActionListener(e -> handleExitAction());
 
-        compileItem.addActionListener(e -> {
-            messagesArea.setText("Compilando...\n");
-            // Adicione a lógica do compilador aqui
-        });
+        // Alteração: Chama o método de compilação
+        compileItem.addActionListener(e -> compileSource());
 
         executeItem.addActionListener(e -> {
             messagesArea.setText("Executando...\n");
@@ -155,9 +154,9 @@ public class CompilerInterface extends JFrame {
         JButton compileButton = new JButton("Compilar");
         JButton executeButton = new JButton("Executar");
 
-        compileButton.addActionListener(e -> {
-            messagesArea.setText("Compilando...\n");
-        });
+        // Alteração: Chama o método de compilação
+        compileButton.addActionListener(e -> compileSource());
+
         executeButton.addActionListener(e -> {
             messagesArea.setText("Executando...\n");
         });
@@ -167,6 +166,50 @@ public class CompilerInterface extends JFrame {
 
         add(toolBar, BorderLayout.NORTH);
     }
+
+    /**
+     * Novo método que pega o código do editor, executa a análise léxica
+     * e exibe o resultado na área de mensagens.
+     */
+    private void compileSource() {
+        String sourceCode = editorArea.getText();
+        if (sourceCode.trim().isEmpty()) {
+            messagesArea.setText("O código-fonte está vazio.");
+            return;
+        }
+
+        messagesArea.setText("Compilando...\n");
+
+        try {
+            // 1. Cria um leitor para o código-fonte do editor
+            StringReader reader = new StringReader(sourceCode);
+
+            // 2. Instancia o analisador léxico com o leitor
+            AnalisadorLexico parser = new AnalisadorLexico(reader);
+
+            // 3. Itera sobre os tokens e constrói a saída
+            StringBuilder output = new StringBuilder();
+            Token t;
+            do {
+                t = parser.getNextToken();
+                // Evita imprimir o token de fim de arquivo (EOF)
+                if (t.kind != AnalisadorLexico.EOF) {
+                    String tokenInfo = String.format("Lexema: %s, Linha: %d, Coluna: %d, Categoria: %s, Código: %d%n",
+                            t.image, t.beginLine, t.beginColumn, t.kind, t.kind);
+                    output.append(tokenInfo);
+                }
+            } while (t.kind != AnalisadorLexico.EOF);
+
+            // 4. Exibe a saída na área de mensagens
+            messagesArea.append("Análise léxica concluída com sucesso:\n");
+            messagesArea.append(output.toString());
+
+        } catch (TokenMgrError e) {
+            // Captura e exibe erros léxicos
+            messagesArea.append("Erro léxico: " + e.getMessage());
+        }
+    }
+
 
     // Métodos para manipulação de arquivos
     private void handleNewAction() {

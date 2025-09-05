@@ -5,7 +5,6 @@ options {
 PARSER_BEGIN(AnalisadorLexico)
 
 import java.io.*;
-
 public class AnalisadorLexico {
     public static void main(String args[]) throws ParseException, TokenMgrError, FileNotFoundException {
         try {
@@ -36,12 +35,14 @@ SKIP : {
 // ------------------------
 SKIP : {
     <LINE_COMMENT: "//" (~["\n", "\r"])* >
-    | "/*" : IN_COMMENT
+    |
+    "/*" : IN_COMMENT
 }
 
 <IN_COMMENT> SKIP : {
     "*/" : DEFAULT
-    | < ~[] >
+    |
+    < ~[] >
 }
 
 // ------------------------
@@ -72,43 +73,19 @@ TOKEN : {
 // Identificadores
 // ------------------------
 TOKEN : {
-    <IDENTIFIER: (<LETRA> | "_")(<DIGITO>(<LETRA> | "_")|(<LETRA> | "_")*)>
+    <IDENTIFIER: (<LETRA> | "_")(<DIGITO>(<LETRA> | "_")|(<LETRA> | "_")*)*>
     | <#LETRA: ["a"-"z", "A"-"Z"]>
     | <#DIGITO: ["0"-"9"]>
 }
 
 
 // ------------------------
-// Constantes
+// Constantes (SINTAXE CORRIGIDA)
 // ------------------------
 TOKEN : {
-    <CONST_REAL: <DIGITO> (<DIGITO>)? (<DIGITO>)? (<DIGITO>)?>
-  | <CONST_INT:  <DIGITO> (<DIGITO>)? (<DIGITO>)? >
-  | <CONST_LITERAL: "\"" (<ASSCI>)* "\"" | "'" (<ASSCI> )* "'" >
-  | <#ASSCI: ["\u0000"-"\u00FF"]>
-}
-
-// ------------------------
-// Palavras reservadas
-// ------------------------
-TOKEN : {
-    <PALAVRA_RESERVADA: <LETRA><LETRA> (<LETRA>)?(<LETRA>)?(<LETRA>)?(<LETRA>)?>
-}
-
-// ------------------------
-// Comentário de linha
-// ------------------------
-TOKEN : {
-    <TEXTO: (<ASSCI> | <LETRA> | <DIGITO>)*>
-    |<COMENTARIO_LINHA: <BARRA> <BARRA> <TEXTO>>
-    | <#BARRA: ["/"]>
-}
-
-// ------------------------
-// Comentário de Bloco
-// ------------------------
-TOKEN : {
-    <COMENTARIO_BLOCO: "/" "*" <TEXTO> "*" "/" >
+    <CONST_REAL: <DIGITO>(<DIGITO>)* "." <DIGITO>(<DIGITO>)*>
+  | <CONST_INT:  <DIGITO>(<DIGITO>)* >
+  | <CONST_LITERAL: "\"" (~["\""])* "\"" | "'" (~["'"])* "'" >
 }
 
 // ------------------------
@@ -144,8 +121,9 @@ TOKEN : {
 }
 
 // ------------------------
-// Erros léxicos
+// Erros léxicos (MOVIDO PARA O FINAL DO ARQUIVO)
+// Esta DEVE ser a última regra de TOKEN.
 // ------------------------
 TOKEN : {
-    <ERRO_LEXICO: ~[" ", "\t", "\n", "\r"] >
+    <ERRO_LEXICO: ~[] >
 }

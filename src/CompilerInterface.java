@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.StringReader; // Importação adicionada
+import java.io.StringReader;
 
 public class CompilerInterface extends JFrame {
 
@@ -22,14 +22,17 @@ public class CompilerInterface extends JFrame {
         // Propriedades da janela
         setTitle("Compilador");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1024, 768);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Áreas de edição e mensagens
         editorArea = new JTextArea();
+        editorArea.setFont(new Font("Consolas", Font.PLAIN, 14));
         messagesArea = new JTextArea();
         messagesArea.setEditable(false);
+        // Usar uma fonte monoespaçada para alinhar a tabela corretamente
+        messagesArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
         // Adiciona a numeração de linha à área de edição
         JScrollPane editorScrollPane = new JScrollPane(editorArea);
@@ -117,10 +120,8 @@ public class CompilerInterface extends JFrame {
         // Menu Compilação
         JMenu compileMenu = new JMenu("Compilação");
         JMenuItem compileItem = new JMenuItem("Compilar");
-        JMenuItem executeItem = new JMenuItem("Executar");
 
         compileMenu.add(compileItem);
-        compileMenu.add(executeItem);
 
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
@@ -134,15 +135,7 @@ public class CompilerInterface extends JFrame {
         saveItem.addActionListener(e -> handleSaveAction());
         saveAsItem.addActionListener(e -> handleSaveAsAction());
         exitItem.addActionListener(e -> handleExitAction());
-
-        // Alteração: Chama o método de compilação
         compileItem.addActionListener(e -> compileSource());
-
-        executeItem.addActionListener(e -> {
-            messagesArea.setText("Executando...\n");
-            // Adicione a lógica de execução aqui
-        });
-
         copyItem.addActionListener(e -> editorArea.copy());
         cutItem.addActionListener(e -> editorArea.cut());
         pasteItem.addActionListener(e -> editorArea.paste());
@@ -150,26 +143,14 @@ public class CompilerInterface extends JFrame {
 
     private void setupToolbar() {
         JToolBar toolBar = new JToolBar();
-        // Botões para o menu Compilação
         JButton compileButton = new JButton("Compilar");
-        JButton executeButton = new JButton("Executar");
-
-        // Alteração: Chama o método de compilação
         compileButton.addActionListener(e -> compileSource());
-
-        executeButton.addActionListener(e -> {
-            messagesArea.setText("Executando...\n");
-        });
-
         toolBar.add(compileButton);
-        toolBar.add(executeButton);
-
         add(toolBar, BorderLayout.NORTH);
     }
 
     /**
-     * Novo método que pega o código do editor, executa a análise léxica
-     * e exibe o resultado na área de mensagens.
+     * Pega o código-fonte, executa a análise léxica e exibe os resultados formatados.
      */
     private void compileSource() {
         String sourceCode = editorArea.getText();
@@ -178,40 +159,81 @@ public class CompilerInterface extends JFrame {
             return;
         }
 
-        messagesArea.setText("Compilando...\n");
-
         try {
-            // 1. Cria um leitor para o código-fonte do editor
-            StringReader reader = new StringReader(sourceCode);
-
-            // 2. Instancia o analisador léxico com o leitor
-            AnalisadorLexico parser = new AnalisadorLexico(reader);
-
-            // 3. Itera sobre os tokens e constrói a saída
+            AnalisadorLexico parser = new AnalisadorLexico(new StringReader(sourceCode));
             StringBuilder output = new StringBuilder();
-            Token t;
-            do {
-                t = parser.getNextToken();
-                // Evita imprimir o token de fim de arquivo (EOF)
-                if (t.kind != AnalisadorLexico.EOF) {
-                    String tokenInfo = String.format("Lexema: %s, Linha: %d, Coluna: %d, Categoria: %s, Código: %d%n",
-                            t.image, t.beginLine, t.beginColumn, t.kind, t.kind);
-                    output.append(tokenInfo);
-                }
-            } while (t.kind != AnalisadorLexico.EOF);
 
-            // 4. Exibe a saída na área de mensagens
-            messagesArea.append("Análise léxica concluída com sucesso:\n");
-            messagesArea.append(output.toString());
+            // Cabeçalho da tabela
+            output.append(String.format("%-20s | %-7s | %-7s | %-45s | %s\n",
+                    "Lexema", "Linha", "Coluna", "Categoria", "Código"));
+            output.append(new String(new char[100]).replace('\0', '-')).append("\n");
+
+            Token t;
+            while ((t = parser.getNextToken()).kind != AnalisadorLexico.EOF) {
+                String category = getCategoryName(t);
+                String code = category.startsWith("ERRO") ? "-" : String.valueOf(t.kind);
+
+                output.append(String.format("%-20s | %-7d | %-7d | %-45s | %s\n",
+                        t.image, t.beginLine, t.beginColumn, category, code));
+            }
+
+            messagesArea.setText("Análise léxica concluída com sucesso:\n\n" + output.toString());
 
         } catch (TokenMgrError e) {
-            // Captura e exibe erros léxicos
-            messagesArea.append("Erro léxico: " + e.getMessage());
+            messagesArea.setText("ERRO LÉXICO GRAVE:\n" + e.getMessage());
+        }
+    }
+
+    /**
+     * Mapeia o 'kind' (código) de um token para uma categoria legível.
+     * @param t O Token a ser analisado.
+     * @return Uma String com o nome da categoria.
+     */
+    private String getCategoryName(Token t) {
+        // O array tokenImage é gerado pelo JavaCC e contém os nomes dos tokens
+        // definidos no arquivo .jj. Ex: "BEGIN", "IDENTIFIER", etc.
+        String tokenName = AnalisadorLexico.tokenImage[t.kind].replace("\"", "").replace("<", "").replace(">", "");
+
+        switch (tokenName.toUpperCase()) {
+            case "BEGIN": case "DEFINE": case "START": case "END": case "SET":
+            case "READ": case "SHOW": case "IF": case "THEN": case "ELSE":
+            case "LOOP": case "WHILE": case "NUM": case "REAL": case "TEXT":
+            case "FLAG": case "TRUE": case "FALSE":
+            case "PALAVRA_RESERVADA":
+                return "PALAVRA RESERVADA";
+
+            case "IDENTIFIER":
+                return "IDENTIFICADOR";
+
+            case "CONST_REAL":
+                return "CONSTANTE NUMÉRICA REAL";
+            case "CONST_INT":
+                return "CONSTANTE NUMÉRICA INTEIRA";
+            case "CONST_LITERAL":
+                return "CONSTANTE LITERAL";
+
+            case "OP_POW": case "OP_RESTO_DIV": case "OP_MENOR_IGUAL": case "OP_MAIOR_IGUAL":
+            case "OP_IGUAL": case "OP_DIF": case "OP_MENOR": case "OP_MAIOR":
+            case "ASSIGNMENT": case "SEMICOLON": case "COMMA": case "LPAREN": case "RPAREN":
+            case "LBRACKET": case "RBRACKET": case "LBRACE": case "RBRACE": case "OP_SOMA":
+            case "OP_SUB": case "OP_MULT": case "OP_DIV": case "OP_MOD": case "OP_E":
+            case "OP_OU": case "OP_NAO":
+                return "SÍMBOLO ESPECIAL";
+
+            case "ERRO_LEXICO":
+                if (t.image.startsWith("\"") || t.image.startsWith("'")) {
+                    return "ERRO LÉXICO: constante literal não finalizada";
+                }
+                return "ERRO LÉXICO: símbolo inválido";
+
+            default:
+                return tokenName; // Categoria padrão caso não se encaixe
         }
     }
 
 
-    // Métodos para manipulação de arquivos
+    // --- Métodos de manipulação de arquivos (sem alterações) ---
+
     private void handleNewAction() {
         if (isFileEdited) {
             int result = showSaveConfirmationDialog();

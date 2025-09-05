@@ -189,22 +189,25 @@ public class CompilerInterface extends JFrame {
      * @param t O Token a ser analisado.
      * @return Uma String com o nome da categoria.
      */
+    /**
+     * Mapeia o 'kind' (código) de um token para uma categoria legível.
+     */
     private String getCategoryName(Token t) {
-        // O array tokenImage é gerado pelo JavaCC e contém os nomes dos tokens
-        // definidos no arquivo .jj. Ex: "BEGIN", "IDENTIFIER", etc.
         String tokenName = AnalisadorLexico.tokenImage[t.kind].replace("\"", "").replace("<", "").replace(">", "");
 
         switch (tokenName.toUpperCase()) {
+            // --- PALAVRAS RESERVADAS ---
             case "BEGIN": case "DEFINE": case "START": case "END": case "SET":
             case "READ": case "SHOW": case "IF": case "THEN": case "ELSE":
             case "LOOP": case "WHILE": case "NUM": case "REAL": case "TEXT":
             case "FLAG": case "TRUE": case "FALSE":
-            case "PALAVRA_RESERVADA":
                 return "PALAVRA RESERVADA";
 
+            // --- IDENTIFICADOR ---
             case "IDENTIFIER":
                 return "IDENTIFICADOR";
 
+            // --- CONSTANTES ---
             case "CONST_REAL":
                 return "CONSTANTE NUMÉRICA REAL";
             case "CONST_INT":
@@ -212,6 +215,7 @@ public class CompilerInterface extends JFrame {
             case "CONST_LITERAL":
                 return "CONSTANTE LITERAL";
 
+            // --- SÍMBOLOS ESPECIAIS ---
             case "OP_POW": case "OP_RESTO_DIV": case "OP_MENOR_IGUAL": case "OP_MAIOR_IGUAL":
             case "OP_IGUAL": case "OP_DIF": case "OP_MENOR": case "OP_MAIOR":
             case "ASSIGNMENT": case "SEMICOLON": case "COMMA": case "LPAREN": case "RPAREN":
@@ -220,10 +224,10 @@ public class CompilerInterface extends JFrame {
             case "OP_OU": case "OP_NAO":
                 return "SÍMBOLO ESPECIAL";
 
-            case "ERRO_LEXICO":
-                if (t.image.startsWith("\"") || t.image.startsWith("'")) {
-                    return "ERRO LÉXICO: constante literal não finalizada";
-                }
+            // --- ERROS ---
+            case "ERRO_LITERAL": // Novo caso para o erro de literal
+                return "ERRO LÉXICO: constante literal não finalizada";
+            case "ERRO_LEXICO": // Este agora trata apenas de símbolos inválidos
                 return "ERRO LÉXICO: símbolo inválido";
 
             default:

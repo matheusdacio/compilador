@@ -86,6 +86,7 @@ TOKEN : {
     <CONST_REAL: <DIGITO>(<DIGITO>)* "." <DIGITO>(<DIGITO>)*>
   | <CONST_INT:  <DIGITO>(<DIGITO>)* >
   | <CONST_LITERAL: "\"" (~["\""])* "\"" | "'" (~["'"])* "'" >
+  | <ERRO_LITERAL: "\"" (~["\"", "\n", "\r"])* | "'" (~["'", "\n", "\r"])* >
 }
 
 // ------------------------

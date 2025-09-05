@@ -59,57 +59,59 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int CONST_LITERAL = 32;
   /** RegularExpression Id. */
-  int OP_POW = 33;
+  int ERRO_LITERAL = 33;
   /** RegularExpression Id. */
-  int OP_RESTO_DIV = 34;
+  int OP_POW = 34;
   /** RegularExpression Id. */
-  int OP_MENOR_IGUAL = 35;
+  int OP_RESTO_DIV = 35;
   /** RegularExpression Id. */
-  int OP_MAIOR_IGUAL = 36;
+  int OP_MENOR_IGUAL = 36;
   /** RegularExpression Id. */
-  int OP_IGUAL = 37;
+  int OP_MAIOR_IGUAL = 37;
   /** RegularExpression Id. */
-  int OP_DIF = 38;
+  int OP_IGUAL = 38;
   /** RegularExpression Id. */
-  int OP_MENOR = 39;
+  int OP_DIF = 39;
   /** RegularExpression Id. */
-  int OP_MAIOR = 40;
+  int OP_MENOR = 40;
   /** RegularExpression Id. */
-  int ASSIGNMENT = 41;
+  int OP_MAIOR = 41;
   /** RegularExpression Id. */
-  int SEMICOLON = 42;
+  int ASSIGNMENT = 42;
   /** RegularExpression Id. */
-  int COMMA = 43;
+  int SEMICOLON = 43;
   /** RegularExpression Id. */
-  int LPAREN = 44;
+  int COMMA = 44;
   /** RegularExpression Id. */
-  int RPAREN = 45;
+  int LPAREN = 45;
   /** RegularExpression Id. */
-  int LBRACKET = 46;
+  int RPAREN = 46;
   /** RegularExpression Id. */
-  int RBRACKET = 47;
+  int LBRACKET = 47;
   /** RegularExpression Id. */
-  int LBRACE = 48;
+  int RBRACKET = 48;
   /** RegularExpression Id. */
-  int RBRACE = 49;
+  int LBRACE = 49;
   /** RegularExpression Id. */
-  int OP_SOMA = 50;
+  int RBRACE = 50;
   /** RegularExpression Id. */
-  int OP_SUB = 51;
+  int OP_SOMA = 51;
   /** RegularExpression Id. */
-  int OP_MULT = 52;
+  int OP_SUB = 52;
   /** RegularExpression Id. */
-  int OP_DIV = 53;
+  int OP_MULT = 53;
   /** RegularExpression Id. */
-  int OP_MOD = 54;
+  int OP_DIV = 54;
   /** RegularExpression Id. */
-  int OP_E = 55;
+  int OP_MOD = 55;
   /** RegularExpression Id. */
-  int OP_OU = 56;
+  int OP_E = 56;
   /** RegularExpression Id. */
-  int OP_NAO = 57;
+  int OP_OU = 57;
   /** RegularExpression Id. */
-  int ERRO_LEXICO = 58;
+  int OP_NAO = 58;
+  /** RegularExpression Id. */
+  int ERRO_LEXICO = 59;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -151,6 +153,7 @@ public interface AnalisadorLexicoConstants {
     "<CONST_REAL>",
     "<CONST_INT>",
     "<CONST_LITERAL>",
+    "<ERRO_LITERAL>",
     "\"**\"",
     "\"%%\"",
     "\"<<=\"",

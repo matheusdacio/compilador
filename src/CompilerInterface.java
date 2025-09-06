@@ -35,7 +35,7 @@ public class CompilerInterface extends JFrame {
         editorArea.setBackground(new Color(255, 255, 255, 211));
         editorArea.setForeground(new Color(51, 51, 51));
         editorArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        editorArea.setCaretColor(new Color(0, 120, 215)); // Azul para cursor
+        editorArea.setCaretColor(new Color(0, 120, 215));
 
         messagesArea = new JTextArea();
         messagesArea.setEditable(false);

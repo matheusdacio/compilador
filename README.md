@@ -1,4 +1,4 @@
 # compilador
 
-Para rodar execute o comando: cd src e depois 
+Para rodar execute o comando: cd src e depois
 java -cp javacc.jar javacc AnalisadorLexico.jj no terminal

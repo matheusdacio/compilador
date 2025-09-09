@@ -11,36 +11,114 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int LINE_COMMENT = 5;
   /** RegularExpression Id. */
-  int PALAVRA_RESERVADA = 9;
+  int BLOCK_COMMENT = 6;
   /** RegularExpression Id. */
-  int IDENTIFIER = 10;
+  int BEGIN = 7;
   /** RegularExpression Id. */
-  int LETRA = 11;
+  int DEFINE = 8;
   /** RegularExpression Id. */
-  int DIGITO = 12;
+  int START = 9;
   /** RegularExpression Id. */
-  int CONST_REAL = 13;
+  int END = 10;
   /** RegularExpression Id. */
-  int CONST_INT = 14;
+  int SET = 11;
   /** RegularExpression Id. */
-  int CONST_LITERAL = 15;
+  int READ = 12;
   /** RegularExpression Id. */
-  int ERRO_LITERAL = 16;
+  int SHOW = 13;
   /** RegularExpression Id. */
-  int OP_RELACIONAL = 17;
+  int IF = 14;
   /** RegularExpression Id. */
-  int OP_ARITMETICO = 18;
+  int THEN = 15;
   /** RegularExpression Id. */
-  int OP_LOGICO = 19;
+  int ELSE = 16;
   /** RegularExpression Id. */
-  int SIMBOLO_ESPECIAL = 20;
+  int LOOP = 17;
   /** RegularExpression Id. */
-  int ERRO_LEXICO = 21;
+  int WHILE = 18;
+  /** RegularExpression Id. */
+  int NUM = 19;
+  /** RegularExpression Id. */
+  int REAL = 20;
+  /** RegularExpression Id. */
+  int TEXT = 21;
+  /** RegularExpression Id. */
+  int FLAG = 22;
+  /** RegularExpression Id. */
+  int TRUE = 23;
+  /** RegularExpression Id. */
+  int FALSE = 24;
+  /** RegularExpression Id. */
+  int INVALID_IDENTIFIER = 25;
+  /** RegularExpression Id. */
+  int IDENTIFIER = 26;
+  /** RegularExpression Id. */
+  int LETRA = 27;
+  /** RegularExpression Id. */
+  int DIGITO = 28;
+  /** RegularExpression Id. */
+  int CONST_REAL = 29;
+  /** RegularExpression Id. */
+  int CONST_INT = 30;
+  /** RegularExpression Id. */
+  int CONST_LITERAL = 31;
+  /** RegularExpression Id. */
+  int ERRO_LITERAL = 32;
+  /** RegularExpression Id. */
+  int OP_REL_LTLT_EQ = 33;
+  /** RegularExpression Id. */
+  int OP_REL_GTGT_EQ = 34;
+  /** RegularExpression Id. */
+  int OP_REL_EQ = 35;
+  /** RegularExpression Id. */
+  int OP_REL_NEQ = 36;
+  /** RegularExpression Id. */
+  int OP_REL_LTLT = 37;
+  /** RegularExpression Id. */
+  int OP_REL_GTGT = 38;
+  /** RegularExpression Id. */
+  int OP_ARIT_POW = 39;
+  /** RegularExpression Id. */
+  int OP_ARIT_DIVINT = 40;
+  /** RegularExpression Id. */
+  int OP_ARIT_SUM = 41;
+  /** RegularExpression Id. */
+  int OP_ARIT_SUB = 42;
+  /** RegularExpression Id. */
+  int OP_ARIT_MUL = 43;
+  /** RegularExpression Id. */
+  int OP_ARIT_DIV = 44;
+  /** RegularExpression Id. */
+  int OP_ARIT_MOD = 45;
+  /** RegularExpression Id. */
+  int OP_LOGIC_AND = 46;
+  /** RegularExpression Id. */
+  int OP_LOGIC_OR = 47;
+  /** RegularExpression Id. */
+  int OP_LOGIC_NOT = 48;
+  /** RegularExpression Id. */
+  int ASSIGN = 49;
+  /** RegularExpression Id. */
+  int SEMICOLON = 50;
+  /** RegularExpression Id. */
+  int COMMA = 51;
+  /** RegularExpression Id. */
+  int LPAREN = 52;
+  /** RegularExpression Id. */
+  int RPAREN = 53;
+  /** RegularExpression Id. */
+  int LBRACKET = 54;
+  /** RegularExpression Id. */
+  int RBRACKET = 55;
+  /** RegularExpression Id. */
+  int LBRACE = 56;
+  /** RegularExpression Id. */
+  int RBRACE = 57;
+  /** RegularExpression Id. */
+  int ERRO_LEXICO = 58;
 
   /** Lexical state. */
   int DEFAULT = 0;
-  /** Lexical state. */
-  int IN_COMMENT = 1;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -50,10 +128,26 @@ public interface AnalisadorLexicoConstants {
     "\"\\n\"",
     "\"\\r\"",
     "<LINE_COMMENT>",
-    "\"/*\"",
-    "\"*/\"",
-    "<token of kind 8>",
-    "<PALAVRA_RESERVADA>",
+    "<BLOCK_COMMENT>",
+    "\"begin\"",
+    "\"define\"",
+    "\"start\"",
+    "\"end\"",
+    "\"set\"",
+    "\"read\"",
+    "\"show\"",
+    "\"if\"",
+    "\"then\"",
+    "\"else\"",
+    "\"loop\"",
+    "\"while\"",
+    "\"num\"",
+    "\"real\"",
+    "\"text\"",
+    "\"flag\"",
+    "\"true\"",
+    "\"false\"",
+    "<INVALID_IDENTIFIER>",
     "<IDENTIFIER>",
     "<LETRA>",
     "<DIGITO>",
@@ -61,10 +155,31 @@ public interface AnalisadorLexicoConstants {
     "<CONST_INT>",
     "<CONST_LITERAL>",
     "<ERRO_LITERAL>",
-    "<OP_RELACIONAL>",
-    "<OP_ARITMETICO>",
-    "<OP_LOGICO>",
-    "<SIMBOLO_ESPECIAL>",
+    "\"<<=\"",
+    "\">>=\"",
+    "\"==\"",
+    "\"!=\"",
+    "\"<<\"",
+    "\">>\"",
+    "\"**\"",
+    "\"%%\"",
+    "\"+\"",
+    "\"-\"",
+    "\"*\"",
+    "\"/\"",
+    "\"%\"",
+    "\"&\"",
+    "\"|\"",
+    "\"!\"",
+    "\"=\"",
+    "\";\"",
+    "\",\"",
+    "\"(\"",
+    "\")\"",
+    "\"[\"",
+    "\"]\"",
+    "\"{\"",
+    "\"}\"",
     "<ERRO_LEXICO>",
   };
 

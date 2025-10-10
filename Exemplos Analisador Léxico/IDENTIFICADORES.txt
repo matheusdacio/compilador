@@ -1,0 +1,9 @@
+X	a _
+		cont  AUX  vari_avel 	OU____TR__a
+
+   teste1Y   teste2_   TESte3_
+
+	>
+naopode1	tambem789nao  IFx
+	   $ABC
+	

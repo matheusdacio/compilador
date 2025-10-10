@@ -1,0 +1,9 @@
+begin 	define
+		START
+
+
+enD      set reAD show IF   then	else
+
+
+	LOOP while
+  Num real text     flag true false

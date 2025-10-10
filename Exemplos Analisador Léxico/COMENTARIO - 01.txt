@@ -1,0 +1,9 @@
+//12   
+
+// comentario de linha		
+	// comentario de linha    
+// 45 id comentario de linha ...  /* comentario de bloco        */
+/*
+   set    893.1 */  /*outro comentario de bloco   777   ELSE    comentario*/
+
+/*  comentario de bloco nao finalizado

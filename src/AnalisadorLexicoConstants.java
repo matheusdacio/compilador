@@ -49,73 +49,89 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int FALSE = 24;
   /** RegularExpression Id. */
-  int INVALID_IDENTIFIER = 25;
+  int ERRO_ID_INICIA_COM_DIGITO = 25;
   /** RegularExpression Id. */
-  int IDENTIFIER = 26;
+  int ERRO_ID_DIGITOS_CONSECUTIVOS = 26;
   /** RegularExpression Id. */
-  int LETRA = 27;
+  int ERRO_ID_TERMINA_COM_DIGITO = 27;
   /** RegularExpression Id. */
-  int DIGITO = 28;
+  int IDENTIFIER = 28;
   /** RegularExpression Id. */
-  int CONST_REAL = 29;
+  int LETRA = 29;
   /** RegularExpression Id. */
-  int CONST_INT = 30;
+  int DIGITO = 30;
   /** RegularExpression Id. */
-  int CONST_LITERAL = 31;
+  int ERRO_REAL_FRACAO_LONGA = 31;
   /** RegularExpression Id. */
-  int ERRO_LITERAL = 32;
+  int ERRO_REAL_INTEIRO_LONGO = 32;
   /** RegularExpression Id. */
-  int OP_REL_LTLT_EQ = 33;
+  int ERRO_REAL_INCOMPLETO = 33;
   /** RegularExpression Id. */
-  int OP_REL_GTGT_EQ = 34;
+  int ERRO_INT_LONGO = 34;
   /** RegularExpression Id. */
-  int OP_REL_EQ = 35;
+  int CONST_REAL = 35;
   /** RegularExpression Id. */
-  int OP_REL_NEQ = 36;
+  int CONST_INT = 36;
   /** RegularExpression Id. */
-  int OP_REL_LTLT = 37;
+  int CONST_LITERAL = 37;
   /** RegularExpression Id. */
-  int OP_REL_GTGT = 38;
+  int ERRO_LITERAL = 38;
   /** RegularExpression Id. */
-  int OP_ARIT_POW = 39;
+  int OP_REL_LTLT_EQ = 39;
   /** RegularExpression Id. */
-  int OP_ARIT_DIVINT = 40;
+  int OP_REL_GTGT_EQ = 40;
   /** RegularExpression Id. */
-  int OP_ARIT_SUM = 41;
+  int OP_REL_EQ = 41;
   /** RegularExpression Id. */
-  int OP_ARIT_SUB = 42;
+  int OP_REL_NEQ = 42;
   /** RegularExpression Id. */
-  int OP_ARIT_MUL = 43;
+  int OP_REL_LTLT = 43;
   /** RegularExpression Id. */
-  int OP_ARIT_DIV = 44;
+  int OP_REL_GTGT = 44;
   /** RegularExpression Id. */
-  int OP_ARIT_MOD = 45;
+  int OP_ARIT_POW = 45;
   /** RegularExpression Id. */
-  int OP_LOGIC_AND = 46;
+  int OP_ARIT_DIVINT = 46;
   /** RegularExpression Id. */
-  int OP_LOGIC_OR = 47;
+  int OP_ARIT_SUM = 47;
   /** RegularExpression Id. */
-  int OP_LOGIC_NOT = 48;
+  int OP_ARIT_SUB = 48;
   /** RegularExpression Id. */
-  int ASSIGN = 49;
+  int OP_ARIT_MUL = 49;
   /** RegularExpression Id. */
-  int SEMICOLON = 50;
+  int OP_ARIT_DIV = 50;
   /** RegularExpression Id. */
-  int COMMA = 51;
+  int OP_ARIT_MOD = 51;
   /** RegularExpression Id. */
-  int LPAREN = 52;
+  int OP_LOGIC_AND = 52;
   /** RegularExpression Id. */
-  int RPAREN = 53;
+  int OP_LOGIC_OR = 53;
   /** RegularExpression Id. */
-  int LBRACKET = 54;
+  int OP_LOGIC_NOT = 54;
   /** RegularExpression Id. */
-  int RBRACKET = 55;
+  int ASSIGN = 55;
   /** RegularExpression Id. */
-  int LBRACE = 56;
+  int SEMICOLON = 56;
   /** RegularExpression Id. */
-  int RBRACE = 57;
+  int COMMA = 57;
   /** RegularExpression Id. */
-  int ERRO_LEXICO = 58;
+  int LPAREN = 58;
+  /** RegularExpression Id. */
+  int RPAREN = 59;
+  /** RegularExpression Id. */
+  int LBRACKET = 60;
+  /** RegularExpression Id. */
+  int RBRACKET = 61;
+  /** RegularExpression Id. */
+  int LBRACE = 62;
+  /** RegularExpression Id. */
+  int RBRACE = 63;
+  /** RegularExpression Id. */
+  int COLON = 64;
+  /** RegularExpression Id. */
+  int DOT = 65;
+  /** RegularExpression Id. */
+  int ERRO_LEXICO = 66;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -147,10 +163,16 @@ public interface AnalisadorLexicoConstants {
     "\"flag\"",
     "\"true\"",
     "\"false\"",
-    "<INVALID_IDENTIFIER>",
+    "<ERRO_ID_INICIA_COM_DIGITO>",
+    "<ERRO_ID_DIGITOS_CONSECUTIVOS>",
+    "<ERRO_ID_TERMINA_COM_DIGITO>",
     "<IDENTIFIER>",
     "<LETRA>",
     "<DIGITO>",
+    "<ERRO_REAL_FRACAO_LONGA>",
+    "<ERRO_REAL_INTEIRO_LONGO>",
+    "<ERRO_REAL_INCOMPLETO>",
+    "<ERRO_INT_LONGO>",
     "<CONST_REAL>",
     "<CONST_INT>",
     "<CONST_LITERAL>",
@@ -180,6 +202,8 @@ public interface AnalisadorLexicoConstants {
     "\"]\"",
     "\"{\"",
     "\"}\"",
+    "\":\"",
+    "\".\"",
     "<ERRO_LEXICO>",
   };
 

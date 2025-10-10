@@ -44,18 +44,52 @@ TOKEN : {
 }
 
 TOKEN : {
-    <INVALID_IDENTIFIER: (<DIGITO>)+ (<LETRA> | "_")((<LETRA> | <DIGITO> | "_")*) >
+    // ERRO 1: Identificador que começa com dígito. (Prioridade máxima de erro)
+    <ERRO_ID_INICIA_COM_DIGITO: (<DIGITO>)+ ((<LETRA> | <DIGITO> | "_")*) >
     |
-    <IDENTIFIER: (<LETRA> | "_")((<LETRA> | <DIGITO> | "_")*)>
-    | <#LETRA: ["a"-"z", "A"-"Z"]>
-    | <#DIGITO: ["0"-"9"]>
+    // ERRO 2: Identificador com dígitos consecutivos.
+    // Esta regra precisa vir ANTES do erro de "termina com dígito".
+    <ERRO_ID_DIGITOS_CONSECUTIVOS:
+      (<LETRA> | "_")
+      (<LETRA> | <DIGITO> | "_")*
+      <DIGITO> <DIGITO>
+      (<LETRA> | <DIGITO> | "_")*
+    >
+    |
+    // ERRO 3: Identificador que termina com dígito.
+    // Esta regra só é alcançada se a de cima falhar.
+    <ERRO_ID_TERMINA_COM_DIGITO: (<LETRA> | "_") (<LETRA> | <DIGITO> | "_")* <DIGITO> >
+    |
+    // REGRA VÁLIDA: Se NENHUM erro acima foi detectado, o lexema é um identificador válido.
+    <IDENTIFIER: (<LETRA> | "_") ((<LETRA> | <DIGITO> | "_")*)>
+    |
+    <#LETRA: ["a"-"z", "A"-"Z"]>
+    |
+    <#DIGITO: ["0"-"9"]>
 }
 
 TOKEN : {
-    <CONST_REAL: <DIGITO>(<DIGITO>)* "." <DIGITO>(<DIGITO>)*>
-  | <CONST_INT:  <DIGITO>(<DIGITO>)* >
-  | <CONST_LITERAL: "\"" (~["\"", "\n", "\r"])* "\"" | "'" (~["'", "\n", "\r"])* "'" >
-  | <ERRO_LITERAL: "\"" (~["\"", "\n", "\r"])* | "'" (~["'", "\n", "\r"])* >
+    // --- ERROS DE NÚMEROS REAIS ---
+
+    //Parte fracionária com 3 ou mais dígitos.
+    <ERRO_REAL_FRACAO_LONGA: (<DIGITO>)+ "." <DIGITO><DIGITO><DIGITO>(<DIGITO>)* >
+    |
+    //Parte inteira com 5 ou mais dígitos.
+    <ERRO_REAL_INTEIRO_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* "." (<DIGITO>)+ >
+    |
+    //termina com um ponto, mas sem a parte fracionária.
+    <ERRO_REAL_INCOMPLETO: (<DIGITO>)+ "." >
+    |
+    //inteiro com 4 ou mais dígitos.
+    <ERRO_INT_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* >
+    |
+    <CONST_REAL: <DIGITO>(<DIGITO>)?(<DIGITO>)?(<DIGITO>)? "." <DIGITO>(<DIGITO>)? >
+    |
+    <CONST_INT: <DIGITO>(<DIGITO>)?(<DIGITO>)? >
+    |
+    <CONST_LITERAL: "\"" (~["\"", "\n", "\r"])* "\"" | "'" (~["'", "\n", "\r"])* "'" >
+    |
+    <ERRO_LITERAL: "\"" (~["\"", "\n", "\r"])* | "'" (~["'", "\n", "\r"])* >
 }
 
 TOKEN : {
@@ -64,7 +98,7 @@ TOKEN : {
       < OP_ARIT_SUM:    "+" > | < OP_ARIT_SUB:    "-" > | < OP_ARIT_MUL:    "*" > | < OP_ARIT_DIV:    "/" > |
       < OP_ARIT_MOD:    "%" > | < OP_LOGIC_AND: "&" > | < OP_LOGIC_OR:  "|" > | < OP_LOGIC_NOT: "!" > |
       < ASSIGN:    "=" > | < SEMICOLON: ";" > | < COMMA:     "," > | < LPAREN:    "(" > | < RPAREN:    ")" > |
-      < LBRACKET:  "[" > | < RBRACKET:  "]" > | < LBRACE:    "{" > | < RBRACE:    "}" >
+      < LBRACKET:  "[" > | < RBRACKET:  "]" > | < LBRACE:    "{" > | < RBRACE:    "}" > | < COLON:    ":" > | <DOT: "." >
 }
 
 TOKEN : {

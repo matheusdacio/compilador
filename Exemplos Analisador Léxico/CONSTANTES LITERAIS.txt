@@ -1,0 +1,13 @@
+"ABC" 
+'abcdefg'
+	"teste""make"
+		'123'""  'se'
+"abc"  "def"  'ghijk'
+
+	"isso 'pode!!!"		'tambem  "" pode, ok!'
+
+
+
+'"
+'erro"
+"literal nao finalizado

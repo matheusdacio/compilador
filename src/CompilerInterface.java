@@ -469,9 +469,11 @@ public class CompilerInterface extends JFrame {
             StringBuilder saida = new StringBuilder();
 
             saida.append("Análise léxica concluída com sucesso:\n\n");
-            saida.append(String.format("%-20s | %-7s | %-7s | %-45s | %s\n",
+            // LARGURA DA CATEGORIA AUMENTADA AQUI
+            saida.append(String.format("%-20s | %-7s | %-7s | %-60s | %-6s\n",
                     "Lexema", "Linha", "Coluna", "Categoria", "Código"));
-            saida.append(new String(new char[100]).replace('\0', '-')).append("\n");
+            // TAMANHO DA LINHA SEPARADORA AUMENTADO
+            saida.append(new String(new char[120]).replace('\0', '-')).append("\n");
 
             java.util.List<Token> tokens = new java.util.ArrayList<>();
             Token token;
@@ -482,7 +484,7 @@ public class CompilerInterface extends JFrame {
             for (int i = 0; i < tokens.size(); i++) {
                 Token atual = tokens.get(i);
                 if (atual.image.equals("/") && (i + 1) < tokens.size() && tokens.get(i + 1).image.equals("*")) {
-                    saida.append(String.format("%-20s | %-7d | %-7d | %-45s | %s\n",
+                    saida.append(String.format("%-20s | %-7d | %-7d | %-60s | %-6s\n",
                             "/*", atual.beginLine, atual.beginColumn,
                             "ERRO LÉXICO: comentário de bloco não finalizado.", "-"));
                     break;
@@ -491,7 +493,8 @@ public class CompilerInterface extends JFrame {
                 String categoria = obterNomeCategoria(atual);
                 String codigo = categoria.startsWith("ERRO") ? "-" : String.valueOf(atual.kind);
                 String lexema = atual.image.trim().replace("\n", "\\n").replace("\r", "\\r");
-                saida.append(String.format("%-20s | %-7d | %-7d | %-45s | %s\n",
+                // E LARGURA DA CATEGORIA AUMENTADA AQUI TAMBÉM
+                saida.append(String.format("%-20s | %-7d | %-7d | %-60s | %-6s\n",
                         lexema, atual.beginLine, atual.beginColumn, categoria, codigo));
             }
 
@@ -505,6 +508,20 @@ public class CompilerInterface extends JFrame {
 
     private String obterNomeCategoria(Token token) {
         switch (token.kind) {
+            case AnalisadorLexico.ERRO_ID_INICIA_COM_DIGITO:
+                return "ERRO LÉXICO: IDENTIFICADOR COMEÇANDO COM DIGITO";
+            case AnalisadorLexico.ERRO_ID_DIGITOS_CONSECUTIVOS:
+                return "ERRO LÉXICO: IDENTIFICADOR COM DIGITOS CONSECUTIVOS";
+            case AnalisadorLexico.ERRO_ID_TERMINA_COM_DIGITO:
+                return "ERRO LÉXICO: IDENTIFICADOR TERMINANDO COM DÍGITO";
+            case AnalisadorLexico.ERRO_REAL_FRACAO_LONGA:
+                return "ERRO LÉXICO: PARTE FRACIONÁRIA COM 3 OU MAIS DÍGITOS";
+            case AnalisadorLexico.ERRO_REAL_INTEIRO_LONGO:
+                return "ERRO LÉXICO: PARTE INTEIRA COM MAIS DE 2 DÍGITOS";
+            case AnalisadorLexico.ERRO_REAL_INCOMPLETO:
+                return "ERRO LÉXICO: PARTE FRACIONÁRIA INCOMPLETA";
+            case AnalisadorLexico.ERRO_INT_LONGO:
+                return "ERRO LÉXICO: PARTE INTEIRA COM 4 OU MAIS DÍGITOS";
             case AnalisadorLexico.BEGIN:
             case AnalisadorLexico.DEFINE:
             case AnalisadorLexico.START:
@@ -538,7 +555,6 @@ public class CompilerInterface extends JFrame {
             case AnalisadorLexico.OP_REL_NEQ:
             case AnalisadorLexico.OP_REL_LTLT:
             case AnalisadorLexico.OP_REL_GTGT:
-                return "OPERADOR RELACIONAL";
             case AnalisadorLexico.OP_ARIT_POW:
             case AnalisadorLexico.OP_ARIT_DIVINT:
             case AnalisadorLexico.OP_ARIT_SUM:
@@ -546,11 +562,9 @@ public class CompilerInterface extends JFrame {
             case AnalisadorLexico.OP_ARIT_MUL:
             case AnalisadorLexico.OP_ARIT_DIV:
             case AnalisadorLexico.OP_ARIT_MOD:
-                return "OPERADOR ARITMÉTICO";
             case AnalisadorLexico.OP_LOGIC_AND:
             case AnalisadorLexico.OP_LOGIC_OR:
             case AnalisadorLexico.OP_LOGIC_NOT:
-                return "OPERADOR LÓGICO";
             case AnalisadorLexico.ASSIGN:
             case AnalisadorLexico.SEMICOLON:
             case AnalisadorLexico.COMMA:
@@ -560,13 +574,13 @@ public class CompilerInterface extends JFrame {
             case AnalisadorLexico.RBRACKET:
             case AnalisadorLexico.LBRACE:
             case AnalisadorLexico.RBRACE:
+            case AnalisadorLexico.COLON:
+            case AnalisadorLexico.DOT:
                 return "SÍMBOLO ESPECIAL";
-            case AnalisadorLexico.INVALID_IDENTIFIER:
-                return "ERRO LÉXICO: identificador inválido";
             case AnalisadorLexico.ERRO_LITERAL:
                 return "ERRO LÉXICO: literal não finalizado";
             case AnalisadorLexico.ERRO_LEXICO:
-                return "ERRO LÉXICO";
+                return "ERRO LÉXICO: Símbolo Inválido";
             default:
                 String imagem = AnalisadorLexico.tokenImage[token.kind].replace("\"", "");
                 return "NÃO CATEGORIZADO (" + imagem + ")";

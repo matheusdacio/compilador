@@ -291,6 +291,21 @@ public class CompilerInterface extends JFrame {
         seletorArquivos = new JFileChooser(System.getProperty("user.dir"));
         seletorArquivos.setFileFilter(new FiltroArquivosTexto());
         seletorArquivos.setAcceptAllFileFilterUsed(true);
+        
+        seletorArquivos.setDialogTitle("Selecionar Arquivo");
+        UIManager.put("FileChooser.openButtonText", "Abrir");
+        UIManager.put("FileChooser.saveButtonText", "Salvar");
+        UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+        UIManager.put("FileChooser.openDialogTitleText", "Abrir");
+        UIManager.put("FileChooser.saveDialogTitleText", "Salvar");
+        UIManager.put("FileChooser.lookInLabelText", "Procurar em:");
+        UIManager.put("FileChooser.fileNameLabelText", "Nome do arquivo:");
+        UIManager.put("FileChooser.filesOfTypeLabelText", "Tipo de arquivo:");
+        UIManager.put("FileChooser.upFolderToolTipText", "Pasta anterior");
+        UIManager.put("FileChooser.homeFolderToolTipText", "Pasta inicial");
+        UIManager.put("FileChooser.newFolderToolTipText", "Nova pasta");
+        UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalhes");
     }
 
     private void adicionarOuvinteFechamento() {
@@ -358,10 +373,16 @@ public class CompilerInterface extends JFrame {
         if (seletorArquivos.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File arquivo = seletorArquivos.getSelectedFile();
             if (arquivo.exists()) {
-                int opcao = JOptionPane.showConfirmDialog(this,
+                String[] opcoes = {"Sim", "Não"};
+                int opcao = JOptionPane.showOptionDialog(this,
                         "O arquivo já existe. Deseja sobrescrevê-lo?",
-                        "Confirmar sobrescrita", JOptionPane.YES_NO_OPTION);
-                if (opcao != JOptionPane.YES_OPTION) {
+                        "Confirmar sobrescrita", 
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        opcoes,
+                        opcoes[1]);
+                if (opcao != 0) {
                     return;
                 }
             }
@@ -379,15 +400,21 @@ public class CompilerInterface extends JFrame {
         if (!arquivoModificado) {
             return true;
         }
-        int resposta = JOptionPane.showConfirmDialog(this,
+        
+        String[] opcoes = {"Sim", "Não", "Cancelar"};
+        int resposta = JOptionPane.showOptionDialog(this,
                 "O arquivo foi modificado. Deseja salvá-lo?",
                 "Salvar alterações",
                 JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-        if (resposta == JOptionPane.CANCEL_OPTION) {
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcoes,
+                opcoes[0]);
+        
+        if (resposta == 2) {
             return false;
         }
-        if (resposta == JOptionPane.YES_OPTION) {
+        if (resposta == 0) {
             acaoSalvarArquivo();
             return !arquivoModificado;
         }
@@ -450,7 +477,6 @@ public class CompilerInterface extends JFrame {
             int fim = areaEdicao.getLineEndOffset(linha);
             marcaLinhaAtual = realcador.addHighlight(inicio, fim, pincelLinhaAtual);
         } catch (BadLocationException ex) {
-            // ignora
         }
     }
 
@@ -469,7 +495,6 @@ public class CompilerInterface extends JFrame {
 
         try {
             analisador.programa();
-            // Usando List raw (sem <String>) para compatibilidade
             List erros = analisador.getErrosSintaticos();
 
             if (erros.isEmpty()) {
@@ -478,7 +503,6 @@ public class CompilerInterface extends JFrame {
             } else {
                 StringBuilder saidaErros = new StringBuilder();
                 saidaErros.append("Erros de compilação encontrados:\n\n");
-                // Iterando sobre a lista de Objects
                 for (Object erro : erros) {
                     saidaErros.append(erro.toString()).append("\n");
                 }
@@ -849,7 +873,6 @@ public class CompilerInterface extends JFrame {
                                 g.fillRect(0, (int) retangulo.getY(), getWidth(), fm.getHeight());
                             }
                         } catch (BadLocationException ignored) {
-                            // ignora
                         }
                         String numero = String.valueOf(linha + 1);
                         int x = getWidth() - fm.stringWidth(numero) - 6;
@@ -859,7 +882,6 @@ public class CompilerInterface extends JFrame {
                     }
                 }
             } catch (BadLocationException ex) {
-                // ignora
             }
         }
     }

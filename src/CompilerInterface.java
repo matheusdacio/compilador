@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class CompilerInterface extends JFrame {
 
@@ -462,46 +463,43 @@ public class CompilerInterface extends JFrame {
         }
 
         atualizarStatus("Compilando...");
-        areaMensagens.setText("Compilando...\n");
+        areaMensagens.setText("Iniciando compilação...\n");
+
+        AnalisadorLexico analisador = new AnalisadorLexico(new StringReader(codigoFonte));
 
         try {
-            AnalisadorLexico analisador = new AnalisadorLexico(new StringReader(codigoFonte));
-            StringBuilder saida = new StringBuilder();
+            analisador.programa();
+            // Usando List raw (sem <String>) para compatibilidade
+            List erros = analisador.getErrosSintaticos();
 
-            saida.append("Análise léxica concluída com sucesso:\n\n");
-            // LARGURA DA CATEGORIA AUMENTADA AQUI
-            saida.append(String.format("%-20s | %-7s | %-7s | %-60s | %-6s\n",
-                    "Lexema", "Linha", "Coluna", "Categoria", "Código"));
-            // TAMANHO DA LINHA SEPARADORA AUMENTADO
-            saida.append(new String(new char[120]).replace('\0', '-')).append("\n");
-
-            java.util.List<Token> tokens = new java.util.ArrayList<>();
-            Token token;
-            while ((token = analisador.getNextToken()).kind != AnalisadorLexico.EOF) {
-                tokens.add(token);
-            }
-
-            for (int i = 0; i < tokens.size(); i++) {
-                Token atual = tokens.get(i);
-                if (atual.image.equals("/") && (i + 1) < tokens.size() && tokens.get(i + 1).image.equals("*")) {
-                    saida.append(String.format("%-20s | %-7d | %-7d | %-60s | %-6s\n",
-                            "/*", atual.beginLine, atual.beginColumn,
-                            "ERRO LÉXICO: comentário de bloco não finalizado.", "-"));
-                    break;
+            if (erros.isEmpty()) {
+                areaMensagens.setText("Programa compilado com sucesso!");
+                atualizarStatus("Compilação concluída");
+            } else {
+                StringBuilder saidaErros = new StringBuilder();
+                saidaErros.append("Erros de compilação encontrados:\n\n");
+                // Iterando sobre a lista de Objects
+                for (Object erro : erros) {
+                    saidaErros.append(erro.toString()).append("\n");
                 }
-
-                String categoria = obterNomeCategoria(atual);
-                String codigo = categoria.startsWith("ERRO") ? "-" : String.valueOf(atual.kind);
-                String lexema = atual.image.trim().replace("\n", "\\n").replace("\r", "\\r");
-                // E LARGURA DA CATEGORIA AUMENTADA AQUI TAMBÉM
-                saida.append(String.format("%-20s | %-7d | %-7d | %-60s | %-6s\n",
-                        lexema, atual.beginLine, atual.beginColumn, categoria, codigo));
+                areaMensagens.setText(saidaErros.toString());
+                atualizarStatus("Erro na compilação");
             }
-
-            areaMensagens.setText(saida.toString());
-            atualizarStatus("Compilação concluída");
+        } catch (ParseException e) {
+            java.util.List errosRecuperados = analisador.getErrosSintaticos();
+            StringBuilder saidaErros = new StringBuilder();
+            saidaErros.append("Erros de compilação encontrados:\n\n");
+            for (Object erro : errosRecuperados) {
+                saidaErros.append(erro.toString()).append("\n");
+            }
+            Token t = e.currentToken.next;
+            String erroFatal = String.format("ERRO SINTÁTICO na Linha: %d, Coluna: %d. Encontrado: '%s'.",
+                    t.beginLine, t.beginColumn, t.image);
+            saidaErros.append(erroFatal).append("\n");
+            areaMensagens.setText(saidaErros.toString());
+            atualizarStatus("Erro na compilação");
         } catch (TokenMgrError erro) {
-            areaMensagens.setText("ERRO LÉXICO:\n" + erro.getMessage());
+            areaMensagens.setText("ERRO LÉXICO:\n\n" + erro.getMessage());
             atualizarStatus("Erro na compilação");
         }
     }

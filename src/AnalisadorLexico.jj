@@ -1,4 +1,4 @@
-// AnalisadorLexico.jj (Versão que não usa LEXICAL_STATES)
+// AnalisadorSintatico.jj (MODO DE COMPATIBILIDADE E REFORMATADO)
 options {
     STATIC = false;
     IGNORE_CASE = true;
@@ -7,24 +7,52 @@ options {
 PARSER_BEGIN(AnalisadorLexico)
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class AnalisadorLexico {
-    public static void main(String args[]) throws ParseException, TokenMgrError, FileNotFoundException {
+    // Usando List sem generics para compatibilidade
+    private List errosSintaticos = new ArrayList();
+
+    public List getErrosSintaticos() {
+        return errosSintaticos;
+    }
+
+    public static void main(String args[]) {
         try {
             AnalisadorLexico parser = new AnalisadorLexico(new FileInputStream(args[0]));
-            Token t;
-            do {
-                t = parser.getNextToken();
-                System.out.printf("Lexema: %s, Categoria: %s%n", t.image, AnalisadorLexico.tokenImage[t.kind]);
-            } while (t.kind != EOF);
+            parser.programa();
+
+            if (parser.getErrosSintaticos().isEmpty()) {
+                System.out.println("Programa compilado com sucesso!");
+            } else {
+                System.out.println("Erros de compilação encontrados:");
+                for (int i = 0; i < parser.getErrosSintaticos().size(); i++) {
+                    System.out.println(parser.getErrosSintaticos().get(i));
+                }
+            }
         } catch (FileNotFoundException e) {
             System.err.println("Arquivo não encontrado.");
         } catch (TokenMgrError e) {
-            System.err.println("ERRO LEXICO: " + e.getMessage());
+            System.err.println("ERRO LÉXICO: " + e.getMessage());
+        } catch (ParseException e) {
+             Token t = e.currentToken.next;
+             String erro = String.format("ERRO SINTÁTICO na Linha: %d, Coluna: %d. Encontrado: '%s'.",
+                                          t.beginLine, t.beginColumn, t.image);
+             System.err.println(erro);
         }
+    }
+
+    void adicionarErro(Token t, String mensagem) {
+        String erro = String.format("ERRO SINTÁTICO na Linha: %d, Coluna: %d. Encontrado: '%s'. Esperado: %s",
+                                     t.beginLine, t.beginColumn, t.image, mensagem);
+        errosSintaticos.add(erro);
     }
 }
 
 PARSER_END(AnalisadorLexico)
+
+// --- DEFINIÇÕES LÉXICAS ---
 
 SKIP : {
     " " | "\t" | "\n" | "\r"
@@ -32,8 +60,7 @@ SKIP : {
 
 SPECIAL_TOKEN : {
     < LINE_COMMENT: "//" (~["\n", "\r"])* >
-|
-    < BLOCK_COMMENT: "/*" (~["*"] | "*" ~["/"])* "*/" >
+|   < BLOCK_COMMENT: "/*" (~["*"] | "*" ~["/"])* "*/" >
 }
 
 TOKEN : {
@@ -44,63 +71,429 @@ TOKEN : {
 }
 
 TOKEN : {
-    // ERRO 1: Identificador que começa com dígito. (Prioridade máxima de erro)
     <ERRO_ID_INICIA_COM_DIGITO: (<DIGITO>)+ ((<LETRA> | <DIGITO> | "_")*) >
-    |
-    // ERRO 2: Identificador com dígitos consecutivos.
-    // Esta regra precisa vir ANTES do erro de "termina com dígito".
-    <ERRO_ID_DIGITOS_CONSECUTIVOS:
-      (<LETRA> | "_")
-      (<LETRA> | <DIGITO> | "_")*
-      <DIGITO> <DIGITO>
-      (<LETRA> | <DIGITO> | "_")*
-    >
-    |
-    // ERRO 3: Identificador que termina com dígito.
-    // Esta regra só é alcançada se a de cima falhar.
-    <ERRO_ID_TERMINA_COM_DIGITO: (<LETRA> | "_") (<LETRA> | <DIGITO> | "_")* <DIGITO> >
-    |
-    // REGRA VÁLIDA: Se NENHUM erro acima foi detectado, o lexema é um identificador válido.
-    <IDENTIFIER: (<LETRA> | "_") ((<LETRA> | <DIGITO> | "_")*)>
-    |
-    <#LETRA: ["a"-"z", "A"-"Z"]>
-    |
-    <#DIGITO: ["0"-"9"]>
+|   <ERRO_ID_DIGITOS_CONSECUTIVOS: (<LETRA> | "_")(<LETRA> | <DIGITO> | "_")* <DIGITO> <DIGITO> (<LETRA> | <DIGITO> | "_")* >
+|   <ERRO_ID_TERMINA_COM_DIGITO: (<LETRA> | "_") (<LETRA> | <DIGITO> | "_")* <DIGITO> >
+|   <IDENTIFIER: (<LETRA> | "_") ((<LETRA> | <DIGITO> | "_")*)>
+|   <#LETRA: ["a"-"z", "A"-"Z"]>
+|   <#DIGITO: ["0"-"9"]>
 }
 
 TOKEN : {
-    // --- ERROS DE NÚMEROS REAIS ---
-
-    //Parte fracionária com 3 ou mais dígitos.
     <ERRO_REAL_FRACAO_LONGA: (<DIGITO>)+ "." <DIGITO><DIGITO><DIGITO>(<DIGITO>)* >
-    |
-    //Parte inteira com 5 ou mais dígitos.
-    <ERRO_REAL_INTEIRO_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* "." (<DIGITO>)+ >
-    |
-    //termina com um ponto, mas sem a parte fracionária.
-    <ERRO_REAL_INCOMPLETO: (<DIGITO>)+ "." >
-    |
-    //inteiro com 4 ou mais dígitos.
-    <ERRO_INT_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* >
-    |
-    <CONST_REAL: <DIGITO>(<DIGITO>)?(<DIGITO>)?(<DIGITO>)? "." <DIGITO>(<DIGITO>)? >
-    |
-    <CONST_INT: <DIGITO>(<DIGITO>)?(<DIGITO>)? >
-    |
-    <CONST_LITERAL: "\"" (~["\"", "\n", "\r"])* "\"" | "'" (~["'", "\n", "\r"])* "'" >
-    |
-    <ERRO_LITERAL: "\"" (~["\"", "\n", "\r"])* | "'" (~["'", "\n", "\r"])* >
+|   <ERRO_REAL_INTEIRO_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* "." (<DIGITO>)+ >
+|   <ERRO_REAL_INCOMPLETO: (<DIGITO>)+ "." >
+|   <ERRO_INT_LONGO: <DIGITO><DIGITO><DIGITO><DIGITO>(<DIGITO>)* >
+|   <CONST_REAL: <DIGITO>(<DIGITO>)?(<DIGITO>)?(<DIGITO>)? "." <DIGITO>(<DIGITO>)? >
+|   <CONST_INT: <DIGITO>(<DIGITO>)?(<DIGITO>)? >
+|   <CONST_LITERAL: "\"" (~["\"", "\n", "\r"])* "\"" | "'" (~["'", "\n", "\r"])* "'" >
+|   <ERRO_LITERAL: "\"" (~["\"", "\n", "\r"])* | "'" (~["'", "\n", "\r"])* >
 }
 
 TOKEN : {
-      < OP_REL_LTLT_EQ: "<<=" > | < OP_REL_GTGT_EQ: ">>=" > | < OP_REL_EQ: "==" > | < OP_REL_NEQ: "!=" > |
-      < OP_REL_LTLT:    "<<" > | < OP_REL_GTGT:    ">>" > | < OP_ARIT_POW: "**" > | < OP_ARIT_DIVINT: "%%" > |
-      < OP_ARIT_SUM:    "+" > | < OP_ARIT_SUB:    "-" > | < OP_ARIT_MUL:    "*" > | < OP_ARIT_DIV:    "/" > |
-      < OP_ARIT_MOD:    "%" > | < OP_LOGIC_AND: "&" > | < OP_LOGIC_OR:  "|" > | < OP_LOGIC_NOT: "!" > |
-      < ASSIGN:    "=" > | < SEMICOLON: ";" > | < COMMA:     "," > | < LPAREN:    "(" > | < RPAREN:    ")" > |
-      < LBRACKET:  "[" > | < RBRACKET:  "]" > | < LBRACE:    "{" > | < RBRACE:    "}" > | < COLON:    ":" > | <DOT: "." >
+    < OP_REL_LTLT_EQ: "<<=" > | < OP_REL_GTGT_EQ: ">>=" > | < OP_REL_EQ: "==" > | < OP_REL_NEQ: "!=" > |
+    < OP_REL_LTLT:    "<<" > | < OP_REL_GTGT:    ">>" > | < OP_ARIT_POW: "**" > | < OP_ARIT_DIVINT: "%%" > |
+    < OP_ARIT_SUM:    "+" > | < OP_ARIT_SUB:    "-" > | < OP_ARIT_MUL:    "*" > | < OP_ARIT_DIV:    "/" > |
+    < OP_ARIT_MOD:    "%" > | < OP_LOGIC_AND: "&" > | < OP_LOGIC_OR:  "|" > | < OP_LOGIC_NOT: "!" > |
+    < ASSIGN:    "=" > | < SEMICOLON: ";" > | < COMMA:     "," > | < LPAREN:    "(" > | < RPAREN:    ")" > |
+    < LBRACKET:  "[" > | < RBRACKET:  "]" > | < LBRACE:    "{" > | < RBRACE:    "}" > | < COLON:    ":" > | <DOT: "." >
 }
 
 TOKEN : {
     <ERRO_LEXICO: ~[] >
+}
+
+// --- PRODUÇÕES SINTÁTICAS ---
+
+void programa(): {}
+{
+    try {
+        <BEGIN>
+        inicio()
+        definicao() <START>
+        comandos()
+        <END><DOT>
+    }catch (ParseException e){
+        adicionarErro(e.currentToken.next, "Informe uma estrutura de programa válida.");
+         while (getToken(1).kind != EOF) { getNextToken(); }
+         }
+}
+
+void inicio() : {}
+{
+    <IDENTIFIER>
+    | {}
+}
+
+void definicao() :{}
+{
+    ( <DEFINE> lista_dv() )
+  | {}
+}
+
+void lista_dv() : {}
+{
+    declaracao_variaveis() ( <COMMA> declaracao_variaveis() )*
+}
+
+void declaracao_variaveis() : {}
+{
+    lista_identificadores() declaracao_variaveis_opcional()
+}
+
+void declaracao_variaveis_opcional() : {}
+{
+    <COMMA> declaracao_variaveis()
+  | {}
+}
+
+void lista_identificadores() : {}
+{
+    <IDENTIFIER> mais_identificadores()
+}
+
+void mais_identificadores() : {}
+{
+    <COMMA> <IDENTIFIER> mais_identificadores()
+    | {}
+}
+
+void comandos() : {}
+{
+    comando() comandos()
+    | {}
+}
+
+void comando() : {}
+{
+    comando_repeticao()
+    | comando_selecao()
+    | comando_entrada_dados()
+    | comando_saida_dados()
+    | comando_atribuicao()
+}
+
+void comando_repeticao() : {}
+{
+    <LOOP> <WHILE> expressao() aux()
+}
+
+void aux() : {}
+{
+    comandos() <END> <SEMICOLON>
+    | <END> <SEMICOLON>
+}
+
+void comando_selecao() : {}
+{
+    <IF> expressao() <THEN> comandos() aux2()
+}
+
+void aux2() : {}
+{
+    <END> <SEMICOLON>
+    | <ELSE> comandos() <END> <SEMICOLON>
+}
+
+void comando_entrada_dados() : {}
+{
+    <READ> <LPAREN> <IDENTIFIER> <RPAREN> <SEMICOLON>
+    | <IDENTIFIER> <LBRACKET> expressao() <RBRACKET> <SEMICOLON>
+}
+
+void comando_saida_dados() : {}
+{
+    <SHOW> <LPAREN> lista_identificadores_e_constantes() <RPAREN>
+}
+
+void lista_identificadores_e_constantes() : {}
+{
+    elemento_lista() mais_elemento_lista()
+}
+
+void mais_elemento_lista() : {}
+{
+    <COMMA> elemento_lista() mais_elemento_lista()
+    | {}
+}
+
+void elemento_lista() : {}
+{
+    lista_identificadores()
+    | lista_constantes()
+}
+
+void lista_constantes() : {}
+{
+    <CONST_INT>
+    | <CONST_REAL>
+    | <CONST_LITERAL>
+}
+
+void comando_atribuicao() : {}
+{
+    <SET> <IDENTIFIER> aux3()
+}
+
+void aux3() : {}
+{
+    expressao() <SEMICOLON>
+    | <LBRACKET> expressao() <RBRACKET> <ASSIGN> expressao() <SEMICOLON>
+}
+
+void expressao() : {}
+{
+    expressao_arit_log() expressao2()
+}
+
+void expressao2() : {}
+{
+    <OP_REL_EQ>
+    | <OP_REL_NEQ>
+    | <OP_REL_LTLT>
+    | <OP_REL_GTGT>
+    | <OP_REL_LTLT_EQ>
+    | <OP_REL_GTGT_EQ>
+    | {}
+}
+
+void expressao_arit_log() : {}
+{
+    termo2() menor_prioridade()
+}
+
+void menor_prioridade() : {}
+{
+    <OP_ARIT_SUM> termo2() menor_prioridade()
+    | <OP_ARIT_SUB> termo2() menor_prioridade()
+    | <OP_LOGIC_OR> termo2() menor_prioridade()
+    | {}
+}
+
+void termo2() : {}
+{
+    termo1() media_prioridade()
+}
+
+void media_prioridade() : {}
+{
+    <OP_ARIT_MUL> termo1() media_prioridade()
+    | <OP_ARIT_DIV> termo1() media_prioridade()
+    | <OP_ARIT_MOD>  termo1() media_prioridade()
+    | <OP_ARIT_DIVINT> termo1() media_prioridade()
+    | <OP_LOGIC_AND> termo1() media_prioridade()
+    | {}
+}
+
+void termo1() : {}
+{
+    elemento() maior_prioridade()
+}
+
+void maior_prioridade() : {}
+{
+    <OP_ARIT_POW> elemento() maior_prioridade()
+    | {}
+}
+
+void elemento() : {}
+{
+    <IDENTIFIER>
+    | <CONST_INT>
+    | <CONST_REAL>
+    | <CONST_LITERAL>
+    | <TRUE>
+    | <FALSE>
+    | <LPAREN> expressao() <RPAREN>
+    | <OP_LOGIC_NOT> <LPAREN> expressao() <RPAREN>
+}
+
+/*
+// --- PRODUÇÕES SINTÁTICAS ---
+
+void programa() : {}
+{
+    try {
+        <BEGIN>
+        [ <IDENTIFIER> ]
+        ( <DEFINE> declaracoes_variaveis() )?
+        <START>
+        lista_comandos()
+        <END> <DOT>
+        <EOF>
+    } catch (ParseException e) {
+        adicionarErro(e.currentToken.next, "uma estrutura de programa válida.");
+        while (getToken(1).kind != EOF) { getNextToken(); }
+    }
+}
+
+void declaracoes_variaveis() : {}
+{
+    ( declaracao() )+
+}
+
+void declaracao() : {}
+{
+    try {
+        lista_identificadores() tipo()
+        (
+            <ASSIGN> valor() <SEMICOLON>
+          | <LBRACKET> <CONST_INT> <RBRACKET>
+            (
+                <ASSIGN> <LBRACE> lista_valores() <RBRACE>
+            )?
+            <SEMICOLON>
+          | <SEMICOLON>
+        )
+    } catch (ParseException e) {
+        adicionarErro(e.currentToken.next, "uma declaração de variável válida.");
+        while (getToken(1).kind != SEMICOLON && getToken(1).kind != START && getToken(1).kind != EOF) {
+            getNextToken();
+        }
+        if(getToken(1).kind == SEMICOLON) getNextToken();
+    }
+}
+
+void lista_identificadores() : {}
+{
+    <IDENTIFIER> ( <COMMA> <IDENTIFIER> )*
+}
+
+void tipo() : {}
+{
+    <NUM> | <REAL> | <TEXT> | <FLAG>
+}
+
+void valor() : {}
+{
+    <CONST_INT> | <CONST_REAL> | <CONST_LITERAL> | <TRUE> | <FALSE>
+}
+
+void lista_valores() : {}
+{
+    valor() ( <COMMA> valor() )*
+}
+
+void lista_comandos() : {}
+{
+    ( comando() )+
+}
+
+void comando() : {}
+{
+    try {
+        LOOKAHEAD(2)
+        comando_atribuicao()
+      | comando_entrada()
+      | comando_saida()
+      | comando_selecao()
+      | comando_repeticao()
+    } catch (ParseException e) {
+        adicionarErro(e.currentToken.next, "um comando válido (set, read, show, if, loop).");
+        while (getToken(1).kind != SEMICOLON && getToken(1).kind != END && getToken(1).kind != EOF) {
+            getNextToken();
+        }
+        if(getToken(1).kind == SEMICOLON) getNextToken();
+    }
+}
+
+void comando_atribuicao() : {}
+{
+    <SET> <IDENTIFIER>
+    (
+        <ASSIGN> expressao() <SEMICOLON>
+      | <LBRACKET> expressao() <RBRACKET> <ASSIGN> expressao() <SEMICOLON>
+    )
+}
+
+void comando_entrada() : {}
+{
+    <READ> <LPAREN>
+    <IDENTIFIER> ( <LBRACKET> expressao() <RBRACKET> )?
+    <RPAREN> <SEMICOLON>
+}
+
+void comando_saida() : {}
+{
+    <SHOW> <LPAREN> item_saida() ( <COMMA> item_saida() )* <RPAREN> <SEMICOLON>
+}
+
+void item_saida() : {}
+{
+    <IDENTIFIER> ( <LBRACKET> expressao() <RBRACKET> )?
+  | <CONST_INT>
+  | <CONST_REAL>
+  | <CONST_LITERAL>
+}
+
+void comando_selecao() : {}
+{
+    <IF> expressao() <THEN>
+    lista_comandos()
+    ( <ELSE> lista_comandos() )?
+    <END> <SEMICOLON>
+}
+
+void comando_repeticao() : {}
+{
+    <LOOP> <WHILE> expressao()
+    lista_comandos()
+    <END> <SEMICOLON>
+}
+
+// --- Gramática de Expressões ---
+
+void expressao() : {}
+{
+    expressao_logica()
+}
+
+void expressao_logica() : {}
+{
+    termo_logico() ( <OP_LOGIC_OR> termo_logico() )*
+}
+
+void termo_logico() : {}
+{
+    fator_logico() ( <OP_LOGIC_AND> fator_logico() )*
+}
+
+void fator_logico() : {}
+{
+    [ <OP_LOGIC_NOT> ] expressao_relacional()
+}
+
+void expressao_relacional() : {}
+{
+    expressao_aritmetica()
+    (
+        ( <OP_REL_EQ> | <OP_REL_NEQ> | <OP_REL_LTLT> | <OP_REL_GTGT> | <OP_REL_LTLT_EQ> | <OP_REL_GTGT_EQ> )
+        expressao_aritmetica()
+    )?
+}
+
+void expressao_aritmetica() : {}
+{
+    termo_aritmetico() ( ( <OP_ARIT_SUM> | <OP_ARIT_SUB> ) termo_aritmetico() )*
+}
+
+void termo_aritmetico() : {}
+{
+    fator_aritmetico() ( ( <OP_ARIT_MUL> | <OP_ARIT_DIV> | <OP_ARIT_MOD> | <OP_ARIT_DIVINT> ) fator_aritmetico() )*
+}
+
+void fator_aritmetico() : {}
+{
+    elemento() ( <OP_ARIT_POW> fator_aritmetico() )?
+}
+
+void elemento() : {}
+{
+    <IDENTIFIER> ( <LBRACKET> expressao() <RBRACKET> )?
+  | <CONST_INT>
+  | <CONST_REAL>
+  | <CONST_LITERAL>
+  | <TRUE>
+  | <FALSE>
+  | <LPAREN> expressao() <RPAREN>
 }

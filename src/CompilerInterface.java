@@ -291,7 +291,7 @@ public class CompilerInterface extends JFrame {
         seletorArquivos = new JFileChooser(System.getProperty("user.dir"));
         seletorArquivos.setFileFilter(new FiltroArquivosTexto());
         seletorArquivos.setAcceptAllFileFilterUsed(true);
-        
+
         seletorArquivos.setDialogTitle("Selecionar Arquivo");
         UIManager.put("FileChooser.openButtonText", "Abrir");
         UIManager.put("FileChooser.saveButtonText", "Salvar");
@@ -376,7 +376,7 @@ public class CompilerInterface extends JFrame {
                 String[] opcoes = {"Sim", "Não"};
                 int opcao = JOptionPane.showOptionDialog(this,
                         "O arquivo já existe. Deseja sobrescrevê-lo?",
-                        "Confirmar sobrescrita", 
+                        "Confirmar sobrescrita",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -400,7 +400,7 @@ public class CompilerInterface extends JFrame {
         if (!arquivoModificado) {
             return true;
         }
-        
+
         String[] opcoes = {"Sim", "Não", "Cancelar"};
         int resposta = JOptionPane.showOptionDialog(this,
                 "O arquivo foi modificado. Deseja salvá-lo?",
@@ -410,7 +410,7 @@ public class CompilerInterface extends JFrame {
                 null,
                 opcoes,
                 opcoes[0]);
-        
+
         if (resposta == 2) {
             return false;
         }
@@ -480,132 +480,58 @@ public class CompilerInterface extends JFrame {
         }
     }
 
+    // =========================================================================
+// MÉTODO DE COMPILAÇÃO CORRIGIDO (USANDO ERROR HANDLER)
+// =========================================================================
     private void acaoCompilar() {
         String codigoFonte = areaEdicao.getText();
         if (codigoFonte.trim().isEmpty()) {
-            areaMensagens.setText("O código-fonte está vazio.\n");
+            areaMensagens.setText("⚠ O código-fonte está vazio.\n");
             atualizarStatus("Nada para compilar");
             return;
         }
 
         atualizarStatus("Compilando...");
-        areaMensagens.setText("Iniciando compilação...\n");
+        areaMensagens.setText("🔍 Iniciando compilação...\n");
 
-        AnalisadorLexico analisador = new AnalisadorLexico(new StringReader(codigoFonte));
+        // 1. Crie uma instância do seu ErrorHandler
+        ErrorHandler errorHandler = new ErrorHandler();
+
+        // 2. Passe o ErrorHandler para o construtor do AnalisadorLexico
+        AnalisadorLexico analisador = new AnalisadorLexico(new StringReader(codigoFonte), errorHandler);
 
         try {
+            // 3. Execute a análise. O analisador irá reportar os erros para o errorHandler
+            //    em vez de lançar exceções para cada erro sintático.
             analisador.programa();
-            List erros = analisador.getErrosSintaticos();
 
-            if (erros.isEmpty()) {
-                areaMensagens.setText("Programa compilado com sucesso!");
-                atualizarStatus("Compilação concluída");
-            } else {
-                StringBuilder saidaErros = new StringBuilder();
-                saidaErros.append("Erros de compilação encontrados:\n\n");
-                for (Object erro : erros) {
-                    saidaErros.append(erro.toString()).append("\n");
-                }
-                areaMensagens.setText(saidaErros.toString());
-                atualizarStatus("Erro na compilação");
-            }
-        } catch (ParseException e) {
-            java.util.List errosRecuperados = analisador.getErrosSintaticos();
+        } catch (TokenMgrError e) {
+            // Erros léxicos (como um símbolo inválido) ainda são fatais e precisam ser capturados.
+            areaMensagens.setText("❌ ERRO LÉXICO IRRECUPERÁVEL:\n\n" + e.getMessage());
+            atualizarStatus("Erro na compilação");
+            return;
+        } catch (Exception e) {
+            // Captura para qualquer outro erro inesperado durante a execução da análise.
+            areaMensagens.setText("❌ ERRO INESPERADO DURANTE A ANÁLISE:\n\n" + e.getMessage());
+            atualizarStatus("Erro na compilação");
+            e.printStackTrace(); // Útil para depuração
+            return;
+        }
+
+        // 4. Após a execução, verifique o errorHandler para ver se algum erro foi encontrado.
+        if (errorHandler.hasErrors()) {
             StringBuilder saidaErros = new StringBuilder();
-            saidaErros.append("Erros de compilação encontrados:\n\n");
-            for (Object erro : errosRecuperados) {
-                saidaErros.append(erro.toString()).append("\n");
+            saidaErros.append("❌ Foram encontrados erros na análise:\n\n");
+
+            for (String erro : errorHandler.getErrorMessages()) {
+                saidaErros.append(erro).append("\n");
             }
-            Token t = e.currentToken.next;
-            String erroFatal = String.format("ERRO SINTÁTICO na Linha: %d, Coluna: %d. Encontrado: '%s'.",
-                    t.beginLine, t.beginColumn, t.image);
-            saidaErros.append(erroFatal).append("\n");
+
             areaMensagens.setText(saidaErros.toString());
             atualizarStatus("Erro na compilação");
-        } catch (TokenMgrError erro) {
-            areaMensagens.setText("ERRO LÉXICO:\n\n" + erro.getMessage());
-            atualizarStatus("Erro na compilação");
-        }
-    }
-
-    private String obterNomeCategoria(Token token) {
-        switch (token.kind) {
-            case AnalisadorLexico.ERRO_ID_INICIA_COM_DIGITO:
-                return "ERRO LÉXICO: IDENTIFICADOR COMEÇANDO COM DIGITO";
-            case AnalisadorLexico.ERRO_ID_DIGITOS_CONSECUTIVOS:
-                return "ERRO LÉXICO: IDENTIFICADOR COM DIGITOS CONSECUTIVOS";
-            case AnalisadorLexico.ERRO_ID_TERMINA_COM_DIGITO:
-                return "ERRO LÉXICO: IDENTIFICADOR TERMINANDO COM DÍGITO";
-            case AnalisadorLexico.ERRO_REAL_FRACAO_LONGA:
-                return "ERRO LÉXICO: PARTE FRACIONÁRIA COM 3 OU MAIS DÍGITOS";
-            case AnalisadorLexico.ERRO_REAL_INTEIRO_LONGO:
-                return "ERRO LÉXICO: PARTE INTEIRA COM MAIS DE 2 DÍGITOS";
-            case AnalisadorLexico.ERRO_REAL_INCOMPLETO:
-                return "ERRO LÉXICO: PARTE FRACIONÁRIA INCOMPLETA";
-            case AnalisadorLexico.ERRO_INT_LONGO:
-                return "ERRO LÉXICO: PARTE INTEIRA COM 4 OU MAIS DÍGITOS";
-            case AnalisadorLexico.BEGIN:
-            case AnalisadorLexico.DEFINE:
-            case AnalisadorLexico.START:
-            case AnalisadorLexico.END:
-            case AnalisadorLexico.SET:
-            case AnalisadorLexico.READ:
-            case AnalisadorLexico.SHOW:
-            case AnalisadorLexico.IF:
-            case AnalisadorLexico.THEN:
-            case AnalisadorLexico.ELSE:
-            case AnalisadorLexico.LOOP:
-            case AnalisadorLexico.WHILE:
-            case AnalisadorLexico.NUM:
-            case AnalisadorLexico.REAL:
-            case AnalisadorLexico.TEXT:
-            case AnalisadorLexico.FLAG:
-            case AnalisadorLexico.TRUE:
-            case AnalisadorLexico.FALSE:
-                return "PALAVRA RESERVADA";
-            case AnalisadorLexico.IDENTIFIER:
-                return "IDENTIFICADOR";
-            case AnalisadorLexico.CONST_REAL:
-                return "CONSTANTE NUMÉRICA REAL";
-            case AnalisadorLexico.CONST_INT:
-                return "CONSTANTE NUMÉRICA INTEIRA";
-            case AnalisadorLexico.CONST_LITERAL:
-                return "CONSTANTE LITERAL";
-            case AnalisadorLexico.OP_REL_LTLT_EQ:
-            case AnalisadorLexico.OP_REL_GTGT_EQ:
-            case AnalisadorLexico.OP_REL_EQ:
-            case AnalisadorLexico.OP_REL_NEQ:
-            case AnalisadorLexico.OP_REL_LTLT:
-            case AnalisadorLexico.OP_REL_GTGT:
-            case AnalisadorLexico.OP_ARIT_POW:
-            case AnalisadorLexico.OP_ARIT_DIVINT:
-            case AnalisadorLexico.OP_ARIT_SUM:
-            case AnalisadorLexico.OP_ARIT_SUB:
-            case AnalisadorLexico.OP_ARIT_MUL:
-            case AnalisadorLexico.OP_ARIT_DIV:
-            case AnalisadorLexico.OP_ARIT_MOD:
-            case AnalisadorLexico.OP_LOGIC_AND:
-            case AnalisadorLexico.OP_LOGIC_OR:
-            case AnalisadorLexico.OP_LOGIC_NOT:
-            case AnalisadorLexico.ASSIGN:
-            case AnalisadorLexico.SEMICOLON:
-            case AnalisadorLexico.COMMA:
-            case AnalisadorLexico.LPAREN:
-            case AnalisadorLexico.RPAREN:
-            case AnalisadorLexico.LBRACKET:
-            case AnalisadorLexico.RBRACKET:
-            case AnalisadorLexico.LBRACE:
-            case AnalisadorLexico.RBRACE:
-            case AnalisadorLexico.COLON:
-            case AnalisadorLexico.DOT:
-                return "SÍMBOLO ESPECIAL";
-            case AnalisadorLexico.ERRO_LITERAL:
-                return "ERRO LÉXICO: literal não finalizado";
-            case AnalisadorLexico.ERRO_LEXICO:
-                return "ERRO LÉXICO: Símbolo Inválido";
-            default:
-                String imagem = AnalisadorLexico.tokenImage[token.kind].replace("\"", "");
-                return "NÃO CATEGORIZADO (" + imagem + ")";
+        } else {
+            areaMensagens.setText("✅ Análise léxica e sintática concluída com sucesso!");
+            atualizarStatus("Compilação concluída");
         }
     }
 

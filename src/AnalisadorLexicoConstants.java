@@ -49,89 +49,87 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int FALSE = 24;
   /** RegularExpression Id. */
-  int ERRO_ID_INICIA_COM_DIGITO = 25;
+  int CONST_REAL = 25;
   /** RegularExpression Id. */
-  int ERRO_ID_DIGITOS_CONSECUTIVOS = 26;
+  int CONST_INT = 26;
   /** RegularExpression Id. */
-  int ERRO_ID_TERMINA_COM_DIGITO = 27;
+  int CONST_LITERAL = 27;
   /** RegularExpression Id. */
-  int IDENTIFIER = 28;
+  int ERRO_REAL_FRACAO_LONGA = 28;
   /** RegularExpression Id. */
-  int LETRA = 29;
+  int ERRO_REAL_INTEIRO_LONGO = 29;
   /** RegularExpression Id. */
-  int DIGITO = 30;
+  int ERRO_REAL_INCOMPLETO = 30;
   /** RegularExpression Id. */
-  int ERRO_REAL_FRACAO_LONGA = 31;
+  int ERRO_INT_LONGO = 31;
   /** RegularExpression Id. */
-  int ERRO_REAL_INTEIRO_LONGO = 32;
+  int ERRO_ID_INICIA_COM_DIGITO = 32;
   /** RegularExpression Id. */
-  int ERRO_REAL_INCOMPLETO = 33;
+  int ERRO_ID_DIGITOS_CONSECUTIVOS = 33;
   /** RegularExpression Id. */
-  int ERRO_INT_LONGO = 34;
+  int ERRO_ID_TERMINA_COM_DIGITO = 34;
   /** RegularExpression Id. */
-  int CONST_REAL = 35;
+  int IDENTIFIER = 35;
   /** RegularExpression Id. */
-  int CONST_INT = 36;
+  int LETRA = 36;
   /** RegularExpression Id. */
-  int CONST_LITERAL = 37;
+  int DIGITO = 37;
   /** RegularExpression Id. */
-  int ERRO_LITERAL = 38;
+  int OP_REL_LTLT_EQ = 38;
   /** RegularExpression Id. */
-  int OP_REL_LTLT_EQ = 39;
+  int OP_REL_GTGT_EQ = 39;
   /** RegularExpression Id. */
-  int OP_REL_GTGT_EQ = 40;
+  int OP_REL_EQ = 40;
   /** RegularExpression Id. */
-  int OP_REL_EQ = 41;
+  int OP_REL_NEQ = 41;
   /** RegularExpression Id. */
-  int OP_REL_NEQ = 42;
+  int OP_REL_LTLT = 42;
   /** RegularExpression Id. */
-  int OP_REL_LTLT = 43;
+  int OP_REL_GTGT = 43;
   /** RegularExpression Id. */
-  int OP_REL_GTGT = 44;
+  int OP_ARIT_POW = 44;
   /** RegularExpression Id. */
-  int OP_ARIT_POW = 45;
+  int OP_ARIT_DIVINT = 45;
   /** RegularExpression Id. */
-  int OP_ARIT_DIVINT = 46;
+  int OP_ARIT_SUM = 46;
   /** RegularExpression Id. */
-  int OP_ARIT_SUM = 47;
+  int OP_ARIT_SUB = 47;
   /** RegularExpression Id. */
-  int OP_ARIT_SUB = 48;
+  int OP_ARIT_MUL = 48;
   /** RegularExpression Id. */
-  int OP_ARIT_MUL = 49;
+  int OP_ARIT_DIV = 49;
   /** RegularExpression Id. */
-  int OP_ARIT_DIV = 50;
+  int OP_ARIT_MOD = 50;
   /** RegularExpression Id. */
-  int OP_ARIT_MOD = 51;
+  int OP_LOGIC_AND = 51;
   /** RegularExpression Id. */
-  int OP_LOGIC_AND = 52;
+  int OP_LOGIC_OR = 52;
   /** RegularExpression Id. */
-  int OP_LOGIC_OR = 53;
+  int OP_LOGIC_NOT = 53;
   /** RegularExpression Id. */
-  int OP_LOGIC_NOT = 54;
+  int ASSIGN = 54;
   /** RegularExpression Id. */
-  int ASSIGN = 55;
+  int SEMICOLON = 55;
   /** RegularExpression Id. */
-  int SEMICOLON = 56;
+  int COMMA = 56;
   /** RegularExpression Id. */
-  int COMMA = 57;
+  int LPAREN = 57;
   /** RegularExpression Id. */
-  int LPAREN = 58;
+  int RPAREN = 58;
   /** RegularExpression Id. */
-  int RPAREN = 59;
+  int LBRACKET = 59;
   /** RegularExpression Id. */
-  int LBRACKET = 60;
+  int RBRACKET = 60;
   /** RegularExpression Id. */
-  int RBRACKET = 61;
+  int LBRACE = 61;
   /** RegularExpression Id. */
-  int LBRACE = 62;
+  int RBRACE = 62;
   /** RegularExpression Id. */
-  int RBRACE = 63;
+  int COLON = 63;
   /** RegularExpression Id. */
-  int COLON = 64;
+  int DOT = 64;
   /** RegularExpression Id. */
-  int DOT = 65;
-  /** RegularExpression Id. */
-  int ERRO_LEXICO = 66;
+  int ERRO_LEXICO = 65;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -163,20 +161,19 @@ public interface AnalisadorLexicoConstants {
     "\"flag\"",
     "\"true\"",
     "\"false\"",
+    "<CONST_REAL>",
+    "<CONST_INT>",
+    "<CONST_LITERAL>",
+    "<ERRO_REAL_FRACAO_LONGA>",
+    "<ERRO_REAL_INTEIRO_LONGO>",
+    "<ERRO_REAL_INCOMPLETO>",
+    "<ERRO_INT_LONGO>",
     "<ERRO_ID_INICIA_COM_DIGITO>",
     "<ERRO_ID_DIGITOS_CONSECUTIVOS>",
     "<ERRO_ID_TERMINA_COM_DIGITO>",
     "<IDENTIFIER>",
     "<LETRA>",
     "<DIGITO>",
-    "<ERRO_REAL_FRACAO_LONGA>",
-    "<ERRO_REAL_INTEIRO_LONGO>",
-    "<ERRO_REAL_INCOMPLETO>",
-    "<ERRO_INT_LONGO>",
-    "<CONST_REAL>",
-    "<CONST_INT>",
-    "<CONST_LITERAL>",
-    "<ERRO_LITERAL>",
     "\"<<=\"",
     "\">>=\"",
     "\"==\"",

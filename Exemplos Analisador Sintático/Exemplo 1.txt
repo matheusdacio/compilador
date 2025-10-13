@@ -1,0 +1,6 @@
+begin identificador
+ define
+ x : num
+ start
+  show(x);
+end.

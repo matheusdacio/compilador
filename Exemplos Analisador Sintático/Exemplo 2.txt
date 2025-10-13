@@ -1,0 +1,27 @@
+begin exemplo
+
+    define
+        a, b, soma : num;
+        texto : text = "resultado:";
+        vetor : real[3] = {1.5, 2.5, 3.5};
+
+    start
+        read(a);
+        read(b);
+
+        set soma = a + b * 2;
+
+        show(texto, soma);
+
+        if soma >> 10 then
+            show("Maior que dez");
+        else
+            show("Menor ou igual a dez");
+        end;
+
+        loop while soma << 20
+            set soma = soma + 1;
+            show("Incrementando soma:", soma);
+        end;
+
+end.

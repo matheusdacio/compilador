@@ -1,0 +1,49 @@
+begin teste_sintatico
+
+define
+    // --- Declarações Corretas ---
+    variavel_simples : num;
+    a, b, c : real;
+    mensagem : text = "Olá, mundo!";
+    condicao : flag;
+
+    // --- Declarações com Erros Sintáticos ---
+    variavel_sem_tipo : ; // ERRO: Esperado um tipo
+    outra_variavel num;   // ERRO: Faltando ':'
+    mais_uma_variavel : real // ERRO: Faltando ';'
+
+start
+    // --- Comandos Corretos ---
+    set a = 10.5;
+    set b = a + 2.0;
+    read(c);
+    show("O valor de c é: ", c);
+
+    // --- Estrutura de Seleção Correta ---
+    if a >> b then
+        show("a é maior que b");
+    else
+        show("a não é maior que b");
+    end;
+
+    // --- Estrutura de Repetição Correta ---
+    set a = 0.0;
+    loop while a << 5.0
+        show("a = ", a);
+        set a = a + 1.0;
+    end;
+
+    // --- Comandos com Erros Sintáticos ---
+    set a = 5.0 // ERRO: Faltando ';'
+    read(c; // ERRO: Faltando ')'
+    show("Olá" // ERRO: Faltando ')'
+
+    if a == 5.0 // ERRO: Faltando 'then'
+        show("a é 5");
+    end;
+
+    loop while a << 10.0
+        set a = a + 1.0;
+    // ERRO: Faltando 'end;'
+
+end. // Fim do programa

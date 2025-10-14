@@ -1,0 +1,9 @@
+begin
+    define
+        1x : num;
+        nome22 : text = "teste";
+        valorReal : real = 123. ;
+        texto@ : text = "ok";
+    start
+        show("Fim");
+    end.

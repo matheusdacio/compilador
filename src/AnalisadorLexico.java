@@ -36,9 +36,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
         }
     }
 
-// =======================================================
 // PRODUÇÕES SINTÁTICAS
-// =======================================================
   final public void programa() throws ParseException {
     try {
       jj_consume_token(BEGIN);
@@ -78,9 +76,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
             }
             while (true) {
                 Token t = getToken(1);
-                if (t.kind == START || t.kind == EOF) {
-                    break;
-                }
+                if (t.kind == START || t.kind == EOF) break;
                 getNextToken();
             }
       }
@@ -91,15 +87,11 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-/*
- * Uma lista de declarações de variáveis consiste em UMA OU MAIS
- * ocorrências de (declaracao_variaveis seguida por um ponto e vírgula).
- */
+// Declarações de variáveis
   final public void lista_dv() throws ParseException {
     label_1:
     while (true) {
       declaracao_variaveis();
-      jj_consume_token(SEMICOLON);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFIER:
         ;
@@ -111,15 +103,33 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-/* declaracao_variaveis NÃO contém ; */
   final public void declaracao_variaveis() throws ParseException {
-    lista_identificadores();
-    jj_consume_token(COLON);
-    tipo();
-    declaracao_variaveis_opcional();
+    try {
+      lista_identificadores();
+      jj_consume_token(COLON);
+      tipo();
+      declaracao_variaveis_opcional();
+      jj_consume_token(SEMICOLON);
+    } catch (ParseException e) {
+        if (errorHandler != null) {
+            Token t = getToken(1);
+            if (t.image.equals("start") || t.image.equals("START")) {
+                errorHandler.addError("Erro: esperado ';' ao final da declara\u00e7\u00e3o de vari\u00e1vel antes de 'start' (linha " + t.beginLine + ", coluna " + t.beginColumn + ")");
+            } else {
+                errorHandler.processParseException(e, "em uma declara\u00e7\u00e3o de vari\u00e1vel");
+            }
+        }
+        while (true) {
+            Token t = getToken(1);
+            if (t.kind == SEMICOLON || t.kind == IDENTIFIER || t.kind == START || t.kind == EOF) {
+                if (t.kind == SEMICOLON) getNextToken();
+                break;
+            }
+            getNextToken();
+        }
+    }
   }
 
-/* opcional (mesma sua definição) */
   final public void declaracao_variaveis_opcional() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ASSIGN:
@@ -227,12 +237,11 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-// -------------------------------------------------------
 // Comandos
-// -------------------------------------------------------
   final public void comandos() throws ParseException {
     label_4:
     while (true) {
+      comando();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SET:
       case READ:
@@ -245,46 +254,40 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
         jj_la1[9] = jj_gen;
         break label_4;
       }
-      try {
-        comando();
-      } catch (ParseException e) {
-            if (errorHandler != null) {
-                errorHandler.processParseException(e, "em um comando");
-            }
-            while (true) {
-                Token t = getToken(1);
-                if (t.kind == SEMICOLON || t.kind == END || t.kind == EOF) {
-                    if (t.kind == SEMICOLON) getNextToken();
-                    break;
-                }
-                getNextToken();
-            }
-      }
     }
   }
 
-// ... (resto das regras de comando e expressão) ...
   final public void comando() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case SET:
-      comando_atribuicao();
-      break;
-    case READ:
-      comando_entrada();
-      break;
-    case SHOW:
-      comando_saida();
-      break;
-    case IF:
-      comando_selecao();
-      break;
-    case LOOP:
-      comando_repeticao();
-      break;
-    default:
-      jj_la1[10] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SET:
+        comando_atribuicao();
+        break;
+      case READ:
+        comando_entrada();
+        break;
+      case SHOW:
+        comando_saida();
+        break;
+      case IF:
+        comando_selecao();
+        break;
+      case LOOP:
+        comando_repeticao();
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException e) {
+        if (errorHandler != null) {
+            errorHandler.processParseException(e, "em um comando");
+        }
+        Token t;
+        do {
+            t = getNextToken();
+        } while (t.kind != EOF && t.kind != SEMICOLON && t.kind != END);
     }
   }
 

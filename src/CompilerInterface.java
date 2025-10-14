@@ -480,48 +480,40 @@ public class CompilerInterface extends JFrame {
         }
     }
 
-    // =========================================================================
-// MÉTODO DE COMPILAÇÃO CORRIGIDO (USANDO ERROR HANDLER)
-// =========================================================================
     private void acaoCompilar() {
         String codigoFonte = areaEdicao.getText();
         if (codigoFonte.trim().isEmpty()) {
-            areaMensagens.setText("⚠ O código-fonte está vazio.\n");
+            areaMensagens.setText("O código-fonte está vazio.\n");
             atualizarStatus("Nada para compilar");
             return;
         }
 
         atualizarStatus("Compilando...");
-        areaMensagens.setText("🔍 Iniciando compilação...\n");
+        areaMensagens.setText("Iniciando compilação...\n");
 
-        // 1. Crie uma instância do seu ErrorHandler
         ErrorHandler errorHandler = new ErrorHandler();
 
-        // 2. Passe o ErrorHandler para o construtor do AnalisadorLexico
         AnalisadorLexico analisador = new AnalisadorLexico(new StringReader(codigoFonte), errorHandler);
 
         try {
-            // 3. Execute a análise. O analisador irá reportar os erros para o errorHandler
-            //    em vez de lançar exceções para cada erro sintático.
             analisador.programa();
-
         } catch (TokenMgrError e) {
-            // Erros léxicos (como um símbolo inválido) ainda são fatais e precisam ser capturados.
-            areaMensagens.setText("❌ ERRO LÉXICO IRRECUPERÁVEL:\n\n" + e.getMessage());
+            // Erros léxicos
+            areaMensagens.setText("ERRO LÉXICO IRRECUPERÁVEL:\n\n" + e.getMessage());
             atualizarStatus("Erro na compilação");
             return;
         } catch (Exception e) {
             // Captura para qualquer outro erro inesperado durante a execução da análise.
-            areaMensagens.setText("❌ ERRO INESPERADO DURANTE A ANÁLISE:\n\n" + e.getMessage());
+            areaMensagens.setText("ERRO INESPERADO DURANTE A ANÁLISE:\n\n" + e.getMessage());
             atualizarStatus("Erro na compilação");
-            e.printStackTrace(); // Útil para depuração
+            e.printStackTrace();
             return;
         }
 
-        // 4. Após a execução, verifique o errorHandler para ver se algum erro foi encontrado.
+
         if (errorHandler.hasErrors()) {
             StringBuilder saidaErros = new StringBuilder();
-            saidaErros.append("❌ Foram encontrados erros na análise:\n\n");
+            saidaErros.append("Foram encontrados erros na análise:\n\n");
 
             for (String erro : errorHandler.getErrorMessages()) {
                 saidaErros.append(erro).append("\n");
@@ -530,7 +522,7 @@ public class CompilerInterface extends JFrame {
             areaMensagens.setText(saidaErros.toString());
             atualizarStatus("Erro na compilação");
         } else {
-            areaMensagens.setText("✅ Análise léxica e sintática concluída com sucesso!");
+            areaMensagens.setText("Análise léxica e sintática concluída com sucesso!");
             atualizarStatus("Compilação concluída");
         }
     }

@@ -1,0 +1,9 @@
+begin
+    define
+        valor1 : num
+        resultado : real = 3.14159;
+        texto$ : text = "pi vale";
+        flag2 : flag = true
+    start
+        show(texto$, resultado, flag2)
+    end.

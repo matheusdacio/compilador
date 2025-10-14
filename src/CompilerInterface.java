@@ -844,8 +844,20 @@ public class CompilerInterface extends JFrame {
             setFont(editor.getFont());
             setBackground(COR_FUNDO_LINHAS);
             setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, COR_BORDA_PAINEL));
-            editor.getDocument().addDocumentListener(new OuvinteDocumentoSimples(this::repaint));
-            setPreferredSize(new Dimension(56, getPreferredSize().height));
+            editor.getDocument().addDocumentListener(new OuvinteDocumentoSimples(() -> {
+                revalidate();
+                repaint();
+            }));
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            FontMetrics fm = editor.getFontMetrics(editor.getFont());
+            int linhas = Math.max(1, editor.getLineCount());
+            int digitos = Math.max(2, String.valueOf(linhas).length());
+            int largura = fm.charWidth('0') * digitos + 12;
+            int altura = Math.max(editor.getPreferredSize().height, editor.getHeight());
+            return new Dimension(largura, altura);
         }
 
         @Override
